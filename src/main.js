@@ -9,6 +9,7 @@ window.onload = function() {
 	renderer.setClearColor("white", 1);
 	
 	scene = new THREE.Scene();
+	scene.fog = new THREE.Fog("white", 0, 20000);
 	
 	camera = new THREE.PerspectiveCamera(
 		35,  //Field of view
