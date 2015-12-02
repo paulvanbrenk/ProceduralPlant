@@ -1,9 +1,12 @@
+///main.js
+//The main script, which initializes everything else
+
 var renderer, scene, camera;
 
 window.onload = function() {
 	renderer = new THREE.WebGLRenderer();
 	document.body.appendChild(renderer.domElement);
-	renderer.setClearColor("navy", 1);
+	renderer.setClearColor("white", 1);
 	
 	scene = new THREE.Scene();
 	
@@ -13,16 +16,19 @@ window.onload = function() {
 		0.1, //Near plane
 		1000 //Far plane
 	);
-	camera.position.set(-15, 10, 10);
-	camera.lookAt(scene.position);
+	camera.position.set(-25, 10, 20);
+	camera.lookAt(new THREE.Vector3(0, 5, 0));
+	
+	scene.add(environment());
 	
 	var geometry = new THREE.BoxGeometry(5, 5, 5);
 	var material = new THREE.MeshLambertMaterial({color: "red"});
 	var mesh = new THREE.Mesh(geometry, material);
+	mesh.position.set(0, 2.5, 0);
 	scene.add(mesh);
 	
 	var light = new THREE.PointLight("white");
-	light.position.set(10, 0, 10);
+	light.position.set(-15, 25, 10);
 	scene.add(light);
 	
 	window.onresize = redraw;
