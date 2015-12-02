@@ -27,7 +27,7 @@ window.onload = function() {
 	mesh.position.set(0, 2.5, 0);
 	scene.add(mesh);
 	
-	var light = new THREE.PointLight("white");
+	var light = new THREE.DirectionalLight("white");
 	light.position.set(-15, 25, 10);
 	scene.add(light);
 	
