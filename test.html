@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html >
+  <head>
+    <meta charset="UTF-8">
+    <title>Homework 3</title>
+    <script src ="lib/md5.js"></script>>
+    <script type="text/javascript">
+        function handleScroll(slider) {
+            var part = slider.name;
+            var val = slider.value;
+            
+            //document.getElementById('Leafinput').value = val;
+            if(slider.name == "leaf")
+            {
+                document.getElementById('leaflbl').innerHTML = val;
+            }
+            else if(slider.name =="root")
+            {
+                document.getElementById('rootlbl').innerHTML = val;
+            }
+            else if(slider.name =="branch")
+            {
+                document.getElementById('branchlbl').innerHTML = val;
+            }
+           
+            // Find the node
+            console.log("test");
+        }
+        function hashtxt()
+        {
+            var text = document.getElementById('hash');
+            var hash = md5(text);
+            console.log("te" + hash);
+        }
+    </script>
+
+  </head>
+
+  <body>
+
+    <br>
+      <table style="width:100%">
+    <tr>
+    <td>
+        <canvas id="3DView" width="300" height="300">
+        Oops ... your browser doesn't support the HTML5 canvas element
+        </canvas>
+    </td>
+    <td>
+        <table style="width:100%">
+            <tr style="width:100%">
+                <td style="width:200px"> Tree Randomness<br>
+                    <!--<input type ="text" id="Leafinput" value =""><br>-->
+                    <label for="leaf" id="leaflbl2">Leaf Current Value</label>
+                    <label for="leaf" id="leaflbl"></label><br>
+                    Leaf:   <input name = "leaf" id="leaf"  type="range" value="0" max="360" min="1" oninput="handleScroll(this);"> </input><br>
+
+                    <label for="root" id="rootlbl2">Root Current Value</label>
+                    <label for="root" id="rootlbl"></label><br>
+                    Root:   <input name = "root" id= "root" type="range" value="0" max="360" min="1" oninput="handleScroll(this);"></input><br>
+
+                    <label for="branch" id="branchlbl2">Branch Current Value</label>
+                    <label for="branch" id="branchlbl"></label><br>
+                    Branch: <input name = "branch" id = "branch" type="range" value="0" max="360" min="1" oninput="handleScroll(this);"></input><br><br><br><br>
+
+
+                    <label for="hash" id="hashlbl"> Type answer here</label>
+                    <input name ="hash" type = "text"><br>
+                    <button type="button" onclick="hashtxt();">Turn Into hash</button>
+
+                </td>
+            </tr>
+        </table>
+    </td>
+    </tr>
+    </table>
+    
+  </body>
+</html>
