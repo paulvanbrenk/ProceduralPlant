@@ -14,7 +14,7 @@ window.onload = function() {
 		35,  //Field of view
 		4/3, //Aspect ratio
 		0.1, //Near plane
-		1000 //Far plane
+		10000 //Far plane
 	);
 	camera.position.set(-25, 10, 20);
 	camera.lookAt(new THREE.Vector3(0, 5, 0));
