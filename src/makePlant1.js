@@ -5,12 +5,15 @@
 // Variables --- o
 
 var currentIndex = 0;
+var wiggleVec = new THREE.Vector3(0,0,0);
+var branchlist = [];
 var debug = false;
 
-var TRUNK =25;
+var TRUNK = 30;
 var HEIGHT = 0.5;
 var SCALE = 2.0;
-var DECAY = 0.05;
+var DECAY = 0.02;
+var WIGGLE = 0.01;
 
 var triangle = new THREE.Triangle(
   new THREE.Vector3(-1,0,-.5).multiplyScalar(SCALE),
@@ -20,14 +23,21 @@ var triangle = new THREE.Triangle(
 
 // Functions --- o
 
-// Align a triangle with a vector (relative to its center). [incomplete] 
+function branchObj(tri,indices) {
+  this.tri = tri;
+  this.indices = indices;
+}
+
+// Align a triangle with a vector (relative to its center).
 function tAlign(tri,vector) {
 
   var center = tri.midpoint();
   var normalized = vector.normalize();
   var newTri = new THREE.Triangle(tri.a.sub(center),tri.b.sub(center),tri.c.sub(center));
   
-  // ... Align with vector ... //
+  newTri.a.projectOnPlane(normalized);
+  newTri.b.projectOnPlane(normalized);
+  newTri.c.projectOnPlane(normalized);
   
   newTri = new THREE.Triangle(newTri.a.add(center),newTri.b.add(center),newTri.c.add(center));
   return newTri;
@@ -48,7 +58,7 @@ function addTriangle(geometry,offset,tri,indices) {
 
   var newTri;
   newTri = tScale(tri,DECAY);
-  // newTri = tAlign(newTri,offset);
+  newTri = tAlign(newTri,offset);
   newTri = new THREE.Triangle( tri.a.add(offset), tri.b.add(offset), tri.c.add(offset) );
 
   geometry.vertices.push (
@@ -80,15 +90,13 @@ function addTriangle(geometry,offset,tri,indices) {
 function branch(geometry,offset,tri,indices,repeat) {
   var T = tri.clone();
   for (var i = 0; i < repeat; i++) {
-    T = addTriangle(geometry,new THREE.Vector3(0,HEIGHT*SCALE,0),tri,indices);
-    
-    // Branch out again!
-    if (T.area() > 1) {
-      var direction = T.plane().normalize().normal;
-      var points = new THREE.Vector3(currentIndex-1,currentIndex-4,currentIndex-5);
-      branch(geometry,direction,T,points,repeat/2)
+    var wiggleAmount = new THREE.Vector3( WIGGLE*((Math.random()*2)-1), WIGGLE*((Math.random()*2)-1), WIGGLE*((Math.random()*2)-1) );
+    var direction = T.plane().normalize().normal.multiplyScalar(HEIGHT);
+    addTriangle(geometry,direction.add(wiggleAmount),T,new THREE.Vector3(currentIndex-3,currentIndex-2,currentIndex-1));
+    if (Math.random > .95) {
+      
     }
-  
+    
   }
 }
 
@@ -97,7 +105,8 @@ function plantMesh1(scene) {
 
   // Create base geometry and material
   var geometry = new THREE.Geometry();
-  var material = new THREE.MeshBasicMaterial({wireframe: debug, color: "#553311"});
+  var material = new THREE.MeshPhongMaterial({wireframe: debug, color: "#553311"});
+  material.shading = THREE.FlatShading;
 
   // Create initial triangle
   var T = triangle.clone();
@@ -111,8 +120,9 @@ function plantMesh1(scene) {
   
   // Trunk
   for (var i = 0; i < TRUNK; i++) {
-    var direction = T.plane().normalize().normal;
-    addTriangle(geometry,direction,T,new THREE.Vector3(currentIndex-3,currentIndex-2,currentIndex-1));
+    wiggleVec.add( new THREE.Vector3(WIGGLE*((Math.random()*2)-1), WIGGLE*((Math.random()*2)-1), WIGGLE*((Math.random()*2)-1)) );
+    var direction = T.plane().normalize().normal.multiplyScalar(HEIGHT);
+    addTriangle(geometry,direction.add(wiggleVec),T,new THREE.Vector3(currentIndex-3,currentIndex-2,currentIndex-1));
   }
   
   // Branches
