@@ -17,8 +17,8 @@ window.onload = function() {
 		0.1, //Near plane
 		10000 //Far plane
 	);
-	camera.position.set(-25, 10, 20);
-	camera.lookAt(new THREE.Vector3(0, 5, 0));
+	camera.position.set(-40, 10, 40);
+	camera.lookAt(new THREE.Vector3(0, 10, 0));
 	
 	scene.add(environment());
 	

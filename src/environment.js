@@ -5,14 +5,16 @@ function environment() {
 	var obj = new THREE.Object3D();
 	
 	//Ground plane
-	var planeGeo = new THREE.PlaneGeometry(10000, 10000, 64, 64);
+	var planeGeo = new THREE.PlaneGeometry(2, 2, 64, 64);
 	noise.seed(Math.random());
 	for (var i = 0; i < planeGeo.vertices.length; ++i) {
 		var vert = planeGeo.vertices[i];
 		var length = vert.length();
-		var dscale = (15000 / Math.pow(length+1, 2));
-		var hscale = (0.05 * Math.pow(length, 1.1));
-		vert.z += (hscale * (noise.perlin2(vert.x*dscale, vert.y*dscale) + 0.3));
+		vert.z += (0.1 * (noise.perlin2(vert.x*10, vert.y*10) + length));
+		vert.x *= Math.pow(Math.abs(vert.x), 0.9);
+		vert.y *= Math.pow(Math.abs(vert.y), 0.9);
+		vert.z *= Math.pow(length, 2);
+		vert.multiplyScalar(10000);
 	}
 	planeGeo.verticesNeedUpdate = true;
 	planeGeo.computeFaceNormals();
