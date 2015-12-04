@@ -58,6 +58,8 @@
 		<script src="js/libs/stats.min.js"></script>
 		
 		<script src="js/libs/dat.gui.min.js"></script>
+		
+		<script src="js/seedrandom.min.js"></script>
 
 		<script type="x-shader/x-vertex" id="vertexShader">
 
@@ -100,11 +102,8 @@
 			var mixers = [];
 			var stats;
 			var leaf;
+			var leafmaterial;
 			
-			
-			var leafmaterial = new THREE.MeshPhongMaterial( { color: 0x11ff22, specular: 0x00aaff, shininess: 5, morphTargets: true, vertexColors: THREE.FaceColors, shading: THREE.FlatShading } );
-				
-
 			var clock = new THREE.Clock();
 			
 			var gui = new dat.GUI({
@@ -112,28 +111,36 @@
 			});
 			
 			var params = {
+				seed: 8129,
+				mode: 1,
 				length: 10,
 				width: 10,
-				divisions: 10,
+				divisions: 8,
 				
 			};
 			
-			//var obj = { regenerate:function(){ alert("clicked") }};
-
+			var random = new Math.seedrandom(params.seed);
+			leafmaterial = new THREE.MeshPhongMaterial( { color: random()*0xffffff, specular: random()*0xffffff, shininess: 5, morphTargets: true, vertexColors: THREE.FaceColors, shading: THREE.FlatShading } );	
+			
+			gui.add(params, 'seed',1,10000).onFinishChange(function(value){
+				random = new Math.seedrandom(value);
+				leafmaterial = new THREE.MeshPhongMaterial( { color: random()*0xffffff, specular: random()*0xffffff, shininess: 5, morphTargets: true, vertexColors: THREE.FaceColors, shading: THREE.FlatShading } );	
+				regenerate_leaf();	
+			});
+			gui.add(params, 'mode',1,3).step(1).onFinishChange(function(value){
+				regenerate_leaf();	
+			})
 			gui.add(params, 'length',1,20).step(1).onFinishChange(function(value){
 				regenerate_leaf();	
-			})
+			});
 			gui.add(params, 'width',1,20).step(1).onFinishChange(function(value){
 				regenerate_leaf();	
-			})
-			gui.add(params, 'divisions',0,100).step(1).onFinishChange(function(value){
+			});
+			gui.add(params, 'divisions',1,100).step(1).onFinishChange(function(value){
 				regenerate_leaf();	
-			})
+			});
 			
-			//gui.add(obj,'regenerate');
-			
-			
-			
+
 
 			init();
 			animate();
@@ -226,11 +233,7 @@
 
 				
 
-				//var material = new THREE.MeshBasicMaterial({color: 0x00ff00,wireframe: true});
-				
-				leaf = new THREE.Mesh( generate_leaf_geometry(params.divisions,params.length,params.width), leafmaterial );
-
-				scene.add(leaf);
+				regenerate_leaf();
 
 				// RENDERER
 
@@ -275,8 +278,9 @@
 			}
 			
 			function regenerate_leaf(){
+				random = new Math.seedrandom(params.seed);
 				scene.remove(leaf);
-				leaf = new THREE.Mesh( generate_leaf_geometry(params.divisions,params.length,params.width), leafmaterial );
+				leaf = new THREE.Mesh( generate_leaf_geometry(params.divisions,params.length,params.width,params.mode), leafmaterial);
 				scene.add(leaf);
 				
 			}
@@ -335,7 +339,7 @@
 
 			}
 			
-			function generate_leaf_geometry(divisions,length,width) {
+			function generate_leaf_geometry(divisions,length,width,mode) {
 			
 				//leaf parameters:
 				// length, width, divisions, divet_depth
@@ -345,30 +349,80 @@
 
 				var geometry = new THREE.Geometry();
 				
-				for ( var i = 0; i < divisions; i ++ ) {
+				switch (mode){
+					case 1: //round leaf
+					for ( var i = 0; i < divisions; i ++ ) {
+						geometry.vertices.push(new THREE.Vector3( i * length/divisions,  0, 0));//i		
+						geometry.vertices.push(new THREE.Vector3( i * length/divisions,  -.1, Math.sin(i * Math.PI*2/divisions) * width/length ));//i+1		
+						if(i>0){
+							geometry.faces.push( new THREE.Face3( i-1, i, i+1 ) );
+							geometry.faces.push( new THREE.Face3( i+1, i, i-1 ) );
+						}			
+					}		
+					var offset = geometry.vertices.length;	
+					for ( var i = 0; i < divisions; i ++ ) {
+						geometry.vertices.push(new THREE.Vector3( i * length/divisions,  0, 0));//i
+						geometry.vertices.push(new THREE.Vector3( i * length/divisions,  -.1, -Math.sin(i * Math.PI*2/divisions) * width/length ));//i+1
+						if(i>0){
+							geometry.faces.push( new THREE.Face3( i+offset-1, i+offset, i+offset+1 ) );
+							geometry.faces.push( new THREE.Face3( i+offset+1, i+offset, i+offset-1 ) );
+						}			
+					}
+					break;
+					case 2://spiky leaf
+					
+					var rvals = [];
+					rvals.push(random());
+					for ( var i = 1; i < divisions; i ++ ) {
+						rvals.push((random()*2 + rvals[i-1]*5)/6);
+					}
+					
+					for ( var i = 1; i < divisions; i ++ ) {
 
-					geometry.vertices.push(new THREE.Vector3( i * length/divisions,  0, 0));//i
+						geometry.vertices.push(new THREE.Vector3( i * length/divisions,  width/length* rvals[i]*rvals[0], 0));//i
+						
+						
+						geometry.vertices.push(new THREE.Vector3( i * length/divisions,  Math.sin(i * Math.PI*2/divisions) * width/length* rvals[i], Math.sin(i * Math.PI*2/divisions) * width/length * rvals[i]));//i+1
+						if(i>0){
+							geometry.faces.push( new THREE.Face3( i-1, i, i+1 ) );
+							geometry.faces.push( new THREE.Face3( i+1, i, i-1 ) );
+						}			
+					}
 					
+					var offset = geometry.vertices.length;
 					
-					geometry.vertices.push(new THREE.Vector3( i * length/divisions,  -.1, Math.sin(i * Math.PI*2/divisions) * width/length ));//i+1
-					if(i>0){
-						geometry.faces.push( new THREE.Face3( i-1, i, i+1 ) );
-						geometry.faces.push( new THREE.Face3( i+1, i, i-1 ) );
-					}			
-				}
-				
-				var offset = geometry.vertices.length;
-				
-				for ( var i = 0; i < divisions; i ++ ) {
+					for ( var i = 1; i < divisions; i ++ ) {
 
-					geometry.vertices.push(new THREE.Vector3( i * length/divisions,  0, 0));//i
+						geometry.vertices.push(new THREE.Vector3( i * length/divisions,  width/length* rvals[i]*rvals[0], 0));//i
+						
+						
+						geometry.vertices.push(new THREE.Vector3( i * length/divisions,  Math.sin(i * Math.PI*2/divisions) * width/length* rvals[i], -Math.sin(i * Math.PI*2/divisions) * width/length * rvals[i]));//i+1
+						if(i>0){
+							geometry.faces.push( new THREE.Face3( i+offset-1, i+offset, i+offset+1 ) );
+							geometry.faces.push( new THREE.Face3( i+offset+1, i+offset, i+offset-1 ) );
+						}			
+					}
 					
+					break;
 					
-					geometry.vertices.push(new THREE.Vector3( i * length/divisions,  -.1, -Math.sin(i * Math.PI*2/divisions) * width/length ));//i+1
-					if(i>0){
-						geometry.faces.push( new THREE.Face3( i+offset-1, i+offset, i+offset+1 ) );
-						geometry.faces.push( new THREE.Face3( i+offset+1, i+offset, i+offset-1 ) );
-					}			
+					case 3:
+					
+					var center = new THREE.Vector3(0,0,0);
+					
+					for ( var i = 0; i < divisions; i += 3 ) {
+					
+						center = new THREE.Vector3( (center.x + random()*length) / 2, (center.y + random()/2) / 2, (center.z + random()*width) / 2);
+
+						geometry.vertices.push(new THREE.Vector3(center.x + 1, center.y, center.z));
+						geometry.vertices.push(new THREE.Vector3(center.x - 1, center.y, center.z - 1));
+						geometry.vertices.push(new THREE.Vector3(center.x - 1, center.y, center.z + 1));
+
+						geometry.faces.push( new THREE.Face3( i, i+1, i+2) );
+			
+					}
+					
+					break;
+					
 				}
 
 				
