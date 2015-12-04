@@ -26,7 +26,8 @@ window.onload = function() {
 	var material = new THREE.MeshLambertMaterial({color: "red"});
 	var mesh = new THREE.Mesh(geometry, material);
 	mesh.position.set(0, 2.5, 0);
-	scene.add(mesh);
+	//scene.add(mesh);
+  scene.add(plantMesh1());
 	
 	var light = new THREE.DirectionalLight("white");
 	light.position.set(-15, 25, 10);
