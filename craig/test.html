@@ -407,19 +407,18 @@
 					
 					case 3:
 					
-					var center = new THREE.Vector3(0,0,0);
-					
-					for ( var i = 0; i < divisions; i += 3 ) {
-					
-						center = new THREE.Vector3( (center.x + random()*length) / 2, (center.y + random()/2) / 2, (center.z + random()*width) / 2);
-
-						geometry.vertices.push(new THREE.Vector3(center.x + 1, center.y, center.z));
-						geometry.vertices.push(new THREE.Vector3(center.x - 1, center.y, center.z - 1));
-						geometry.vertices.push(new THREE.Vector3(center.x - 1, center.y, center.z + 1));
-
-						geometry.faces.push( new THREE.Face3( i, i+1, i+2) );
-			
-					}
+					for ( var i = 0; i < divisions; i += 2 ) {
+							
+						/*geometry.vertices.push(new THREE.Vector3( i * length/divisions,  -.1, Math.sin(i * Math.PI*2/divisions) * width/length ));//i+1	
+						geometry.vertices.push(new THREE.Vector3( i * length/divisions,  0, 0));//i	
+						geometry.vertices.push(new THREE.Vector3( i * length/divisions,  -.1, -Math.sin(i * Math.PI*2/divisions) * width/length ));//i+1
+						
+						var x = i*3;
+						if(x>0){
+							geometry.faces.push( new THREE.Face3( i-1, i, i+1 ) );
+							geometry.faces.push( new THREE.Face3( i+1, i, i-1 ) );
+						}*/			
+					}		
 					
 					break;
 					
