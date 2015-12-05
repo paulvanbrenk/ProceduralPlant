@@ -4,7 +4,7 @@
 var renderer, scene, camera;
 
 window.onload = function() {
-	renderer = new THREE.WebGLRenderer();
+	renderer = new THREE.WebGLRenderer({antialias: true});
 	document.body.appendChild(renderer.domElement);
 	renderer.setClearColor("white", 1);
 	
