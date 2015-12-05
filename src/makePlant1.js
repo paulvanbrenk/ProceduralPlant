@@ -2,11 +2,25 @@
 // Code to create a plant #1 //
 //---------------------------//
 
+// Random number generation --- o
+
+var inputString = "0123456789abcdef0123456789abcdef";
+var inputArray = [];
+var rand = 0;
+
+for (var i = 0; i < inputString.length; i++) {
+  inputArray.push(parseInt(inputString.charAt(i),16));
+  rand += inputArray[i];
+}
+
+rand = rand / (inputString.length * 15.0);
+
 // Variables --- o
 
 var currentIndex = 0;
 var wiggleVec = new THREE.Vector3(0,0,0);
 var segments = [];
+var leafVerts = [];
 var firstSegment = 0;
 var treeHeight = 0;
 var debug = false;
@@ -27,13 +41,17 @@ var SINE_FREQ = 5;         // Rate of sine decay
 var WIGGLE = 0.005;       // Tendency of the trunk to curve
 var B_WIGGLE = 0.05;      // Tendency of the branches to curve
 
-var CHANCE = 0.97;       // Base chance to spawn a branch
+var CHANCE = 0.97;        // Base chance to spawn a branch
 var LEVEL_MOD = 0.15;     // Spawn chance penalty if you are a sub-branch (stacks infinitely)
 var B_NUM = 3;            // Maximum sub-branch level to spawn branches
 
-var HEIGHT_MOD = 0.8;        // Branches spawn more often here, where 1 is the top of the tree
-var HEIGHT_WEIGHT = 0.1;     // Influnce of the height modifier
-var HEIGHT_THRESHOLD = 0.5;  // Difference at which no branches will grow
+var HEIGHT_MOD = 0.8;         // Branches spawn more often here, where 1 is the top of the tree
+var HEIGHT_WEIGHT = 0.1;      // Influnce of the height modifier
+var HEIGHT_THRESHOLD = 0.5;   // Difference at which no branches will grow
+
+var LEAF_FREQ = 0.0;          // Frequency of leaf generation
+var LEAF_MOD = 0.5;           // Tendency of leaves to grow at a position, where 1 is the tip of a branch
+var LEAF_WEIGHT = 0.1;        // Influence of the lead modifier
 
 var triangle = new THREE.Triangle(
   new THREE.Vector3(-1,0,-.5).multiplyScalar(SCALE),
