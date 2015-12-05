@@ -22,12 +22,33 @@ window.onload = function() {
 	
 	scene.add(environment());
 	
-  scene.add(plantMesh1());
-  var leafList = getLeaves();
+	scene.add(plantMesh1());
+	var leafList = getLeaves();
+	
+	for(var i=0; i< leafList.length; i++){
+		var leafObj = generate_leaf_object(leafList[i]);
+		//do merge here
+	}
+	leafList = [];
 	
 	var light = new THREE.DirectionalLight("white");
 	light.position.set(-15, 25, 10);
 	scene.add(light);
+	
+	
+	// Controls
+				
+	controls = new THREE.TrackballControls( camera , renderer.domElement );
+
+	controls.rotateSpeed = 1.0;
+	controls.zoomSpeed = 1.2;
+	controls.panSpeed = 0.8;
+
+	controls.noZoom = false;
+	controls.noPan = false;
+
+	controls.staticMoving = true;
+	controls.dynamicDampingFactor = 0.15;
 	
 	window.onresize = redraw;
 	window.onresize();
