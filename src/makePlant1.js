@@ -20,36 +20,36 @@ rand = rand / (inputString.length * 15.0);
 var currentIndex = 0;
 var wiggleVec = new THREE.Vector3(0,0,0);
 var segments = [];
-var leafVerts = [];
+var leaves = [];
 var firstSegment = 0;
 var treeHeight = 0;
 var debug = false;
 
-var TRUNK = 50;           // Number of trunk segments
-var BRANCH = 5;           // Number of branch segments
+var TRUNK = 30;           // Number of trunk segments
+var BRANCH = 6;           // Number of branch segments
 var MIN_AREA = 0.1;       // Minimum area required so spawn a branch
 
-var HEIGHT = 0.5;         // Height of a segment
+var HEIGHT = 0.7;         // Height of a segment
 var SCALE = 1.0;          // Scale of the entire tree
 
-var DECAY = 0.02;         // Rate at which the trunk shrinks
-var B_DECAY = 0.4;        // Rate at which branches shrink
+var DECAY = 0.03;         // Rate at which the trunk shrinks
+var B_DECAY = 0.2;        // Rate at which branches shrink
 
-var SINE_DECAY = 0.2;      // Wavelike form decay
-var SINE_FREQ = 5;         // Rate of sine decay
+var SINE_DECAY = 0.1;     // Wavelike form decay
+var SINE_FREQ = 5;        // Rate of sine decay
 
 var WIGGLE = 0.005;       // Tendency of the trunk to curve
 var B_WIGGLE = 0.05;      // Tendency of the branches to curve
 
-var CHANCE = 0.97;        // Base chance to spawn a branch
-var LEVEL_MOD = 0.15;     // Spawn chance penalty if you are a sub-branch (stacks infinitely)
+var CHANCE = 0.05;        // Base chance to spawn a branch
+var LEVEL_MOD = 0.1;      // Spawn chance penalty if you are a sub-branch (stacks infinitely)
 var B_NUM = 3;            // Maximum sub-branch level to spawn branches
 
-var HEIGHT_MOD = 0.8;         // Branches spawn more often here, where 1 is the top of the tree
+var HEIGHT_MOD = 0.9;         // Branches spawn more often here, where 1 is the top of the tree
 var HEIGHT_WEIGHT = 0.1;      // Influnce of the height modifier
 var HEIGHT_THRESHOLD = 0.5;   // Difference at which no branches will grow
 
-var LEAF_FREQ = 0.0;          // Frequency of leaf generation
+var LEAF_FREQ = 0.04;         // Frequency of leaf generation
 var LEAF_MOD = 0.5;           // Tendency of leaves to grow at a position, where 1 is the tip of a branch
 var LEAF_WEIGHT = 0.1;        // Influence of the lead modifier
 
@@ -60,6 +60,10 @@ var triangle = new THREE.Triangle(
 );
 
 // Functions --- o
+
+function getLeaves() {
+  return leaves;
+}
 
 // Stores an external (visible) triangle of the tree
 function Segment(p0,p1,p2,i0,i1,i2) {
@@ -78,7 +82,7 @@ function branchChance(segment,level) {
   }
   hDiff = Math.abs(hDiff - HEIGHT_MOD);
   if (hDiff > HEIGHT_THRESHOLD) {return false;}
-  return (Math.random() > ( CHANCE  +  level*LEVEL_MOD  +  (1-hDiff)*-HEIGHT_WEIGHT ) && segment.tri.area() > MIN_AREA);
+  return (Math.random() < ( CHANCE  -  level*LEVEL_MOD  -  (1-hDiff)*-HEIGHT_WEIGHT ) && segment.tri.area() > MIN_AREA);
 }
 
 // Align a triangle with a vector (relative to its center).
@@ -171,7 +175,12 @@ function branch(geometry,tri,indices,repeat,level) {
     }
     else {
       temp = addTriangle(geometry,direction.add(wiggleVec),temp,new THREE.Vector3(currentIndex-3,currentIndex-2,currentIndex-1));
-    }    
+    }
+    
+    if (Math.random() < LEAF_FREQ) {leaves.push(temp.a);}
+    if (Math.random() < LEAF_FREQ) {leaves.push(temp.b);}
+    if (Math.random() < LEAF_FREQ) {leaves.push(temp.c);}
+    
   }
   
   // Branches spawn more branches
@@ -229,7 +238,7 @@ function plantMesh1(scene) {
       }
     }
   }
-  console.log(segments.length);
+  console.log(leaves.length);
 
   // Return final mesh
   currentIndex = 0;
