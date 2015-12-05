@@ -8,24 +8,28 @@ var currentIndex = 0;
 var wiggleVec = new THREE.Vector3(0,0,0);
 var segments = [];
 var firstSegment = 0;
-var lastSegment = 0;
+var treeHeight = 0;
 var debug = false;
 
-var TRUNK = 25;
-var BRANCH = 5;
-var MIN_AREA = 0.1;
+var TRUNK = 25;           // Number of trunk segments
+var BRANCH = 5;           // Number of branch segments
+var MIN_AREA = 0.1;       // Minimum area required so spawn a branch
 
-var HEIGHT = 1.0;
-var SCALE = 1.0;
+var HEIGHT = 1.0;         // Height of a segment
+var SCALE = 1.0;          // Scale of the entire tree
 
-var DECAY = 0.02;
-var B_DECAY = 0.2;
-var WIGGLE = 0.01;
-var B_WIGGLE = 0.03;
+var DECAY = 0.02;         // Rate at which the trunk shrinks
+var B_DECAY = 0.2;        // Rate at which branches shrink
+var WIGGLE = 0.01;        // Tendency of the trunk to curve
+var B_WIGGLE = 0.05;      // Tendency of the branches to curve
 
-var CHANCE = 0.97;
-var LEVEL_MOD = 0.01;
-var B_NUM = 3;
+var CHANCE = 0.97;        // Base chance to spawn a branch
+var LEVEL_MOD = 0.15;      // Spawn chance penalty if you are a sub-branch (stacks infinitely)
+var B_NUM = 3;            // Maximum sub-branch level to spawn branches
+
+var HEIGHT_MOD = 0.8;        // Branches spawn more often here, where 1 is the top of the tree
+var HEIGHT_WEIGHT = 0.15;    // Influnce of the height modifier
+var HEIGHT_THRESHOLD = 0.4;  // Difference at which no branches will grow
 
 var triangle = new THREE.Triangle(
   new THREE.Vector3(-1,0,-.5).multiplyScalar(SCALE),
@@ -40,6 +44,19 @@ function Segment(p0,p1,p2,i0,i1,i2) {
   this.tri = new THREE.Triangle(p0,p1,p2);
   this.indices = new THREE.Vector3(i0,i1,i2);
   this.height = Math.max(p0.y,p1.y,p2.y);
+  treeHeight = Math.max(treeHeight,this.height);
+}
+
+// Determines whether or not a branch spawns a segment
+function branchChance(segment,level) {
+
+  var hDiff = 0;
+  if (treeHeight != 0) {
+    hDiff = segment.height/treeHeight;
+  }
+  hDiff = Math.abs(hDiff - HEIGHT_MOD);
+  if (hDiff > HEIGHT_THRESHOLD) {return false;}
+  return (Math.random() > ( CHANCE  +  level*LEVEL_MOD  +  (1-hDiff)*-HEIGHT_WEIGHT ) && segment.tri.area() > MIN_AREA);
 }
 
 // Align a triangle with a vector (relative to its center).
@@ -125,7 +142,7 @@ function branch(geometry,tri,indices,repeat,level) {
     var end = segments.length;
     firstSegment = segments.length;
     for (var i = start; i < end; i++) {
-      if (Math.random() > CHANCE + level*LEVEL_MOD && segments[i].tri.area() > MIN_AREA) {
+      if (branchChance(segments[i],level)) {
         branch(geometry,segments[i].tri,segments[i].indices,BRANCH,level+1);
       }
     }
@@ -165,7 +182,7 @@ function plantMesh1(scene) {
     firstSegment = segments.length;
     var end = segments.length;
     for (var i = 0; i < end; i++) {
-      if (Math.random() > CHANCE && segments[i].tri.area() > MIN_AREA) {
+      if (branchChance(segments[i],0)) {
         branch(geometry,segments[i].tri,segments[i].indices,BRANCH,0);
       }
     }
