@@ -127,7 +127,7 @@
 				leafmaterial = new THREE.MeshPhongMaterial( { color: random()*0xffffff, specular: random()*0xffffff, shininess: 5, morphTargets: true, vertexColors: THREE.FaceColors, shading: THREE.FlatShading } );	
 				regenerate_leaf();	
 			});
-			gui.add(params, 'mode',1,3).step(1).onFinishChange(function(value){
+			gui.add(params, 'mode',1,4).step(1).onFinishChange(function(value){
 				regenerate_leaf();	
 			})
 			gui.add(params, 'length',1,20).step(1).onFinishChange(function(value){
@@ -404,21 +404,60 @@
 					}
 					
 					break;
-					
 					case 3:
-					
-					for ( var i = 0; i < divisions; i += 2 ) {
-							
-						/*geometry.vertices.push(new THREE.Vector3( i * length/divisions,  -.1, Math.sin(i * Math.PI*2/divisions) * width/length ));//i+1	
-						geometry.vertices.push(new THREE.Vector3( i * length/divisions,  0, 0));//i	
-						geometry.vertices.push(new THREE.Vector3( i * length/divisions,  -.1, -Math.sin(i * Math.PI*2/divisions) * width/length ));//i+1
-						
-						var x = i*3;
-						if(x>0){
+				
+					var subdiv = Math.floor(random() * divisions/10) + 3;
+					for ( var i = 0; i < divisions; i ++ ) {
+						var tmp = (i%subdiv == 0) ? Math.sin(i * Math.PI*2/divisions) * width/length : (Math.sin(i * Math.PI*2/divisions) * width/length + i * length/divisions)/2;
+						geometry.vertices.push(new THREE.Vector3( i * length/divisions,  0, 0));//i		
+						geometry.vertices.push(new THREE.Vector3( i * length/divisions,  -.1, tmp ));//i+1							
+						if(i>0){
 							geometry.faces.push( new THREE.Face3( i-1, i, i+1 ) );
 							geometry.faces.push( new THREE.Face3( i+1, i, i-1 ) );
-						}*/			
+						}			
 					}		
+					var offset = geometry.vertices.length;	
+					for ( var i = 0; i < divisions; i ++ ) {
+						var tmp = (i%subdiv == 0) ? Math.sin(i * Math.PI*2/divisions) * width/length : (Math.sin(i * Math.PI*2/divisions) * width/length + i * length/divisions)/2;
+						geometry.vertices.push(new THREE.Vector3( i * length/divisions,  0, 0));//i		
+						geometry.vertices.push(new THREE.Vector3( i * length/divisions,  -.1, -tmp ));//i+1	
+						if(i>0){
+							geometry.faces.push( new THREE.Face3( i+offset-1, i+offset, i+offset+1 ) );
+							geometry.faces.push( new THREE.Face3( i+offset+1, i+offset, i+offset-1 ) );
+						}			
+					}		
+					break;
+					
+					case 4:
+					
+					for ( var i = 0; i < divisions; i ++ ) {
+					
+					
+						var angle = random()*Math.PI*2;
+						var x1 = Math.cos(angle)*width*random();
+						var y1 = Math.sin(angle)*length*random();
+						
+						var x2 = Math.cos(angle + Math.PI*.9)*width*random();
+						var y2 = Math.sin(angle + Math.PI*.9)*length*random();
+						
+						var x3 = Math.cos(angle + Math.PI*1.1)*width*random();
+						var y3 = Math.sin(angle + Math.PI*1.1)*length*random();
+					
+					
+					
+						geometry.vertices.push(new THREE.Vector3(x1,y2,y1));
+						geometry.vertices.push(new THREE.Vector3(x2,y3,y2));
+						geometry.vertices.push(new THREE.Vector3(x3,y1,y3));
+						
+						//geometry.faces.push( new THREE.Face3( i*3+1, i*3, i*3+2 ) );
+						//geometry.faces.push( new THREE.Face3( i*3, i*3+1, i*3+2 ) );
+						
+						geometry.faces.push( new THREE.Face3( i*1+1, i*2, i*3+2 ) );
+						geometry.faces.push( new THREE.Face3( i*2, i*1+1, i*3+2 ) );
+						
+					}
+					
+					
 					
 					break;
 					
