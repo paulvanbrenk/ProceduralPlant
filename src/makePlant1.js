@@ -11,25 +11,29 @@ var firstSegment = 0;
 var treeHeight = 0;
 var debug = false;
 
-var TRUNK = 25;           // Number of trunk segments
+var TRUNK = 50;           // Number of trunk segments
 var BRANCH = 5;           // Number of branch segments
 var MIN_AREA = 0.1;       // Minimum area required so spawn a branch
 
-var HEIGHT = 1.0;         // Height of a segment
+var HEIGHT = 0.5;         // Height of a segment
 var SCALE = 1.0;          // Scale of the entire tree
 
 var DECAY = 0.02;         // Rate at which the trunk shrinks
-var B_DECAY = 0.2;        // Rate at which branches shrink
-var WIGGLE = 0.01;        // Tendency of the trunk to curve
+var B_DECAY = 0.4;        // Rate at which branches shrink
+
+var SINE_DECAY = 0.2;      // Wavelike form decay
+var SINE_FREQ = 5;         // Rate of sine decay
+
+var WIGGLE = 0.005;       // Tendency of the trunk to curve
 var B_WIGGLE = 0.05;      // Tendency of the branches to curve
 
-var CHANCE = 0.97;        // Base chance to spawn a branch
-var LEVEL_MOD = 0.15;      // Spawn chance penalty if you are a sub-branch (stacks infinitely)
+var CHANCE = 0.97;       // Base chance to spawn a branch
+var LEVEL_MOD = 0.15;     // Spawn chance penalty if you are a sub-branch (stacks infinitely)
 var B_NUM = 3;            // Maximum sub-branch level to spawn branches
 
 var HEIGHT_MOD = 0.8;        // Branches spawn more often here, where 1 is the top of the tree
-var HEIGHT_WEIGHT = 0.15;    // Influnce of the height modifier
-var HEIGHT_THRESHOLD = 0.4;  // Difference at which no branches will grow
+var HEIGHT_WEIGHT = 0.1;     // Influnce of the height modifier
+var HEIGHT_THRESHOLD = 0.5;  // Difference at which no branches will grow
 
 var triangle = new THREE.Triangle(
   new THREE.Vector3(-1,0,-.5).multiplyScalar(SCALE),
@@ -86,11 +90,27 @@ function tScale(tri,value) {
   return new THREE.Triangle(d1,d2,d3);
 }
 
+// Cap a triangle into a pyramid
+function capTriangle(geometry,offset,tri,indices) {
+  var newTri = tri.clone();
+  var newPoint = newTri.midpoint().add(offset);
+  
+  geometry.vertices.push( new THREE.Vector3(newPoint.x, newPoint.y, newPoint.z) );
+  
+  geometry.faces.push(new THREE.Face3(indices.x,indices.y,currentIndex));
+  geometry.faces.push(new THREE.Face3(indices.y,indices.z,currentIndex));
+  geometry.faces.push(new THREE.Face3(indices.z,indices.x,currentIndex));
+  
+  currentIndex += 1;
+  return newTri;
+}
+
 // Append a triangle to an existing vertex mesh
 function addTriangle(geometry,offset,tri,indices) {
 
   var newTri = tri.clone();
-  newTri = tScale(newTri,DECAY);
+  scale = DECAY + Math.sin(segments.length*SINE_FREQ)*SINE_DECAY;
+  newTri = tScale(newTri,scale);
   newTri = tAlign(newTri,offset);
   newTri = new THREE.Triangle( newTri.a.add(offset), newTri.b.add(offset), newTri.c.add(offset) );
 
@@ -174,6 +194,10 @@ function plantMesh1(scene) {
     var direction = T.plane().normalize().normal.multiplyScalar(HEIGHT);
     T = addTriangle(geometry,direction.add(wiggleVec),T,new THREE.Vector3(currentIndex-3,currentIndex-2,currentIndex-1));
   }
+  
+  wiggleVec.add( new THREE.Vector3(WIGGLE*((Math.random()*2)-1), WIGGLE*((Math.random()*2)-1), WIGGLE*((Math.random()*2)-1)) );
+  var direction = T.plane().normalize().normal.multiplyScalar(HEIGHT);
+  T = capTriangle(geometry,direction,T,new THREE.Vector3(currentIndex-3,currentIndex-2,currentIndex-1));
   
   // Branches
   DECAY = B_DECAY;
