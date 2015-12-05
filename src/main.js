@@ -82,7 +82,7 @@ window.onload = function() {
 	light.position.set(-15, 20, 10);
 	scene.add(light);
 	
-	var lightNight = new THREE.DirectionalLight("#F1E", 0.4);
+	var lightNight = new THREE.DirectionalLight("#EAF", 0.1);
 	lightNight.position.set(15, -25, -10);
 	scene.add(lightNight);
 	
