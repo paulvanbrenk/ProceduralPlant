@@ -42,14 +42,15 @@ function regenerate_tree(){
 	
 	plantObj = plantMesh1(params);
 	scene.add(plantObj);
-	/*var leafList = getLeaves();//list of points to put leaves on
-	for(var i=0; i< leafList.length; i++){
-		var leafObj = generate_leaf_object(leafList[i]);
+	//list of points to put leaves on
+	for(var i=0; i< leaves.length; i++){
+		var leafObj = generate_leaf_object(leaves[i]);
 		//do object merge here
 		leafObjs.push(leafObj); //keep reference for now
 		scene.add( leafObj );
-	}*/
-	leafList = [];
+	}
+  console.log(leaves);
+	leaves = [];
 }
 
 
