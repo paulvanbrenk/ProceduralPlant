@@ -32,8 +32,8 @@ function environment() {
 	}
 	var skyMat = new THREE.MeshPhongMaterial({
 		shading: THREE.FlatShading,
-		color: "blue", fog: false});
-	skyMat.emissive = new THREE.Color("#447");
+		color: "#11E", fog: false});
+	skyMat.emissive = new THREE.Color("#335");
 	skyMat.shininess = 0;
 	var sky = new THREE.Mesh(skyGeo, skyMat);
 	sky.rotation.set(0, Math.random()*Math.PI, Math.random()*Math.PI);
@@ -43,6 +43,41 @@ function environment() {
 	updates.push(function(dt) {
 		sky.rotation.y += (0.000005 * dt);
 		sky.rotation.z += (0.000001 * dt);
+	});
+	
+	//Clouds
+	var angleMin = Math.PI/5;
+	var angleMax = Math.PI/2;
+	var cloudGeo = new THREE.RingGeometry(angleMin, angleMax, 128, 32);
+	noise.seed(Math.random())
+	for (var i = 0; i < cloudGeo.vertices.length; ++i) {
+		var vert = cloudGeo.vertices[i];
+		var angle = vert.length()
+		
+		var pos = ((2 * (angle - angleMin) / (angleMax - angleMin)) - 1);
+		var offset = -Math.pow(pos, 6);
+		offset += noise.perlin2(vert.x*2, vert.y*2);
+		offset += (0.5 * (noise.perlin2(100+vert.x*7, 100+vert.y*7) - 0.5));
+		
+		vert.normalize();
+		vert.applyEuler(new THREE.Euler(0, 0, Math.PI/2));
+		var vertNew = new THREE.Vector3(0, 0, -1);
+		vertNew.applyAxisAngle(vert, angle);
+		vert.copy(vertNew);
+		
+		vert.multiplyScalar(1 - (offset * 0.2));
+	}
+	var cloudMat = new THREE.MeshPhongMaterial({
+		shading: THREE.FlatShading, color: "#AAF", fog: false});
+	cloudMat.emissive = new THREE.Color("#AAA");
+	var cloud = new THREE.Mesh(cloudGeo, cloudMat);
+	cloud.scale.multiplyScalar(20000);
+	cloud.rotation.x = Math.PI/2;
+	obj.add(cloud);
+	
+	//Cloud rotation
+	updates.push(function(dt) {
+		cloud.rotation.z -= (0.000005 * dt);
 	});
 	
 	return obj;

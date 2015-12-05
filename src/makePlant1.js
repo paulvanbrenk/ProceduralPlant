@@ -25,7 +25,6 @@ var segments = [];
 var leaves = [];
 var firstSegment = 0;
 var treeHeight = 0;
-var debug = false;
 
 var DECAY = 0.03;         // Rate at which the trunk shrinks
 var WIGGLE = 0.005;       // Tendency of the trunk to curve
@@ -34,12 +33,8 @@ var triangle;
 
 // Functions --- o
 
-function getLeaves() {
-  return leaves;
-}
-
 function LeafObj(vertex,rotation) {
-  this.vertex = vertex;
+  this.position = vertex;
   this.rotation = rotation;
 }
 
@@ -155,9 +150,20 @@ function branch(geometry,tri,indices,repeat,level) {
       temp = addTriangle(geometry,direction.add(wiggleVec),temp,new THREE.Vector3(currentIndex-3,currentIndex-2,currentIndex-1));
     }
     
-    if (random() < params.LEAF_FREQ) {leaves.push(temp.a);}
-    if (random() < params.LEAF_FREQ) {leaves.push(temp.b);}
-    if (random() < params.LEAF_FREQ) {leaves.push(temp.c);}
+    // Leaves
+    var temp2 = temp.clone();
+    var midpoint = temp.midpoint();
+    if (random() < params.LEAF_FREQ) {
+      leaves.push(new LeafObj( temp2.a, new THREE.Vector3().subVectors(temp2.a,midpoint).normalize() ));
+    }
+    
+    if (random() < params.LEAF_FREQ) {
+      leaves.push(new LeafObj( temp2.b, new THREE.Vector3().subVectors(temp2.a,midpoint).normalize() ));
+    }
+    
+    if (random() < params.LEAF_FREQ) {
+      leaves.push(new LeafObj( temp2.c, new THREE.Vector3().subVectors(temp2.a,midpoint).normalize() ));
+    }
     
   }
   
@@ -194,7 +200,7 @@ function plantMesh1(vars) {
 
   // Create base geometry and material
   var geometry = new THREE.Geometry();
-  var material = new THREE.MeshPhongMaterial({wireframe: debug, color: params.COLOR});
+  var material = new THREE.MeshPhongMaterial({wireframe: params.WIREFRAME, color: params.COLOR});
   material.shading = THREE.FlatShading;
 
   // Create initial triangle
@@ -236,7 +242,6 @@ function plantMesh1(vars) {
   currentIndex = 0;
   wiggleVec = new THREE.Vector3(0,0,0);
   segments = [];
-  leaves = [];
   firstSegment = 0;
   treeHeight = 0;
   return new THREE.Mesh(geometry,material);

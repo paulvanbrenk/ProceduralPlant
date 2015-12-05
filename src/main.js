@@ -39,22 +39,26 @@ function regenerate_tree(){
 		//scene.remove( leafObjs[i] );
 	//}
 	scene.remove(plantObj);
+  for (var i = 0; i < leafObjs.length; i++) {
+    scene.remove(leafObjs[i]);
+  }
+  leafObjs = [];
 	
 	plantObj = plantMesh1(params);
 	scene.add(plantObj);
-	/*var leafList = getLeaves();//list of points to put leaves on
-	for(var i=0; i< leafList.length; i++){
-		var leafObj = generate_leaf_object(leafList[i]);
+	//list of points to put leaves on
+	for(var i=0; i< leaves.length; i++){
+		var leafObj = generate_leaf_object(leaves[i]);
 		//do object merge here
 		leafObjs.push(leafObj); //keep reference for now
 		scene.add( leafObj );
-	}*/
-	leafList = [];
+	}
+	leaves = [];
 }
 
 
 window.onload = function() {
-	renderer = new THREE.WebGLRenderer({antialias: true});
+	renderer = new THREE.WebGLRenderer({antialias: true, logarithmicDepthBuffer: true});
 	document.body.appendChild(renderer.domElement);
 	renderer.setClearColor("white", 1);
 	
@@ -67,16 +71,19 @@ window.onload = function() {
 		0.1, //Near plane
 		50000 //Far plane
 	);
-	camera.position.set(-40, 10, 40);
-	camera.lookAt(new THREE.Vector3(0, 10, 0));
+	camera.position.set(-75, 25, 75);
 	
 	scene.add(environment());
 	
 	
 	
 	var light = new THREE.DirectionalLight("white");
-	light.position.set(-15, 25, 10);
+	light.position.set(-15, 20, 10);
 	scene.add(light);
+	
+	var lightNight = new THREE.DirectionalLight("#EAF", 0.1);
+	lightNight.position.set(15, -25, -10);
+	scene.add(lightNight);
 	
 	
 	//GUI
@@ -85,34 +92,37 @@ window.onload = function() {
 			
 	params = {
 		seed: 5555,
-		TRUNK: 30,           // Number of trunk segments
-		BRANCH: 6,           // Number of branch segments
-		MIN_AREA: 0.1,       // Minimum area required so spawn a branch
+		TRUNK: 50,           // Number of trunk segments  // 0 - 150
+		BRANCH: 9,           // Number of branch segments // 0 - 30
+		MIN_AREA: 0.1,       // Minimum area required so spawn a branch // 0 - 0.5
 
-		HEIGHT: 0.7,         // Height of a segment
-		SCALE: 1.0,          // Scale of the entire tree
+		HEIGHT: 0.7,         // Height of a segment // 0.1 - 5
+		SCALE: 1.0,          // Scale of the entire tree // 0.1 - 50
 
-		DECAY: 0.03,         // Rate at which the trunk shrinks
-		B_DECAY: 0.2,        // Rate at which branches shrink
+		DECAY: 0.03,         // Rate at which the trunk shrinks // 0 - 1
+		B_DECAY: 0.2,        // Rate at which branches shrink // 0 - 1
 
-		SINE_DECAY: 0.1,     // Wavelike form decay
-		SINE_FREQ: 5,        // Rate of sine decay
+		SINE_DECAY: 0.1,     // Wavelike form decay // 0 - 1
+		SINE_FREQ: 5,        // Rate of sine decay // 0 - 20
 
-		WIGGLE: 0.005,       // Tendency of the trunk to curve
-		B_WIGGLE: 0.05,      // Tendency of the branches to curve
+		WIGGLE: 0.005,       // Tendency of the trunk to curve // 0 - 0.02
+		B_WIGGLE: 0.05,      // Tendency of the branches to curve // 0 - .3
 
-		CHANCE: 0.05,        // Base chance to spawn a branch
-		LEVEL_MOD: 0.1,      // Spawn chance penalty if you are a sub-branch (stacks infinitely)
-		B_NUM: 3,            // Maximum sub-branch level to spawn branches
+		CHANCE: 0.05,        // Base chance to spawn a branch // 0 - 0.2
+		LEVEL_MOD: 0.1,      // Spawn chance penalty if you are a sub-branch (stacks infinitely) // 0 - 0.3
+		B_NUM: 3,            // Maximum sub-branch level to spawn branches // 0 - 5
 
-		HEIGHT_MOD: 0.9,         // Branches spawn more often here, where 1 is the top of the tree
-		HEIGHT_WEIGHT: 0.1,      // Influnce of the height modifier
-		HEIGHT_THRESHOLD: 0.5,   // Difference at which no branches will grow
+		HEIGHT_MOD: 0.9,         // Branches spawn more often here, where 1 is the top of the tree // 0 - 1
+		HEIGHT_WEIGHT: 0.1,      // Influnce of the height modifier // 0 - 0.3
+		HEIGHT_THRESHOLD: 0.5,   // Difference at which no branches will grow // 0 - 1
 
-		LEAF_FREQ: 0.04,         // Frequency of leaf generation
-		LEAF_MOD: 0.5,           // Tendency of leaves to grow at a position, where 1 is the tip of a branch
-		LEAF_WEIGHT: 0.1,        // Influence of the lead modifier
-		COLOR: "#553311"    // Tree color
+		LEAF_FREQ: 0.08,         // Frequency of leaf generation // 0 - .3
+		LEAF_MOD: 0.5,           // Tendency of leaves to grow at a position, where 1 is the tip of a branch // 0 - 1
+		LEAF_WEIGHT: 0.1,        // Influence of the lead modifier // 0 - 0.3
+    
+		COLOR: "#553311",        // Tree color
+    
+    WIREFRAME: false         // Display wireframe
 		
 	};
 			
@@ -181,6 +191,12 @@ window.onload = function() {
 	gui.add(params, 'LEAF_WEIGHT').onFinishChange(function(value){
 		regenerate_tree();	
 	});
+  gui.add(params, 'COLOR').onFinishChange(function(value){
+		regenerate_tree();	
+	});
+  gui.add(params, 'WIREFRAME').onFinishChange(function(value){
+		regenerate_tree();	
+	});
 	
 	regenerate_tree();
 	
@@ -188,6 +204,7 @@ window.onload = function() {
 	// Controls
 				
 	controls = new THREE.TrackballControls( camera , renderer.domElement );
+	controls.target.set(0, 20, 0);
 
 	controls.rotateSpeed = 1.0;
 	controls.zoomSpeed = 1.2;

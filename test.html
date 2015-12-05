@@ -4,7 +4,21 @@
     <meta charset="UTF-8">
     <title>Homework 3</title>
     <script src ="lib/md5.js"></script>>
-    <script type="text/javascript">
+    <script src = "craig/js/libs/dat.gui.min.js"></script>
+    <script>
+
+        var gui= new dat.GUI({
+            height :5*32-1
+        });
+        var params ={
+            leaf: 5,
+            branch: 7,
+            root: 10,
+        };
+
+        gui.add(params, 'leaf').name("Leaf").min(3).max(100).listen();
+        gui.add(params, 'branch').name("Branch").min(3).max(100);
+        gui.add(params, 'root').name("Root").min(3).max(100);
         function handleScroll(slider) {
             var part = slider.name;
             var val = slider.value;
@@ -12,7 +26,8 @@
             //document.getElementById('Leafinput').value = val;
             if(slider.name == "leaf")
             {
-                document.getElementById('leaflbl').innerHTML = val;
+                params.leaf = val;
+                //document.getElementById('leaflbl').innerHTML = val;
             }
             else if(slider.name =="root")
             {
@@ -46,11 +61,11 @@
         Oops ... your browser doesn't support the HTML5 canvas element
         </canvas>
     </td>
+   
     <td>
         <table style="width:100%">
             <tr style="width:100%">
                 <td style="width:200px"> Tree Randomness<br>
-                    <!--<input type ="text" id="Leafinput" value =""><br>-->
                     <label for="leaf" id="leaflbl2">Leaf Current Value</label>
                     <label for="leaf" id="leaflbl"></label><br>
                     Leaf:   <input name = "leaf" id="leaf"  type="range" value="0" max="360" min="1" oninput="handleScroll(this);"> </input><br>
