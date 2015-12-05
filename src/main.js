@@ -68,7 +68,7 @@ window.onload = function() {
 	camera = new THREE.PerspectiveCamera(
 		35,  //Field of view
 		4/3, //Aspect ratio
-		0.1, //Near plane
+		0.001, //Near plane
 		50000 //Far plane
 	);
 	camera.position.set(-75, 25, 75);
