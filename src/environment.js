@@ -46,46 +46,38 @@ function environment() {
 	});
 	
 	//Clouds
-	var cloudObj = new THREE.Object3D();
-	var cloudMatVis = new THREE.MeshPhongMaterial({
-		shading: THREE.FlatShading, color: "#AAF", fog: false});
-	cloudMatVis.emissive = new THREE.Color("#AAA");
-	var cloudMatHid = new THREE.MeshLambertMaterial();
-	cloudMatHid.visible = false;
-	var cloudMat = new THREE.MeshFaceMaterial([cloudMatVis, cloudMatHid]);
-	for (var cloudIndex = 0; cloudIndex < 8; ++cloudIndex) {
-		var cloudGeo = new THREE.PlaneGeometry(2, 2, 16, 16);
-		noise.seed(Math.random())
-		for (var i = 0; i < cloudGeo.vertices.length; ++i) {
-			var vert = cloudGeo.vertices[i];
-			var length = vert.length();
-			vert.z += (noise.perlin2(vert.x*2, vert.y*2) * 2);
-			vert.z -= (Math.pow(length, 2) * 2);
-		}
-		var cloudV = cloudGeo.vertices;
-		for (var i = 0; i < cloudGeo.faces.length; ++i) {
-			var face = cloudGeo.faces[i];
-			if (Math.min(cloudV[face.a].z, cloudV[face.b].z, cloudV[face.c].z) < -1) {
-				face.materialIndex = 1;
-			}
-		}
-		cloudGeo.verticesNeedUpdate = true;
-		cloudGeo.computeFaceNormals();
-		cloudGeo.computeVertexNormals();
-		var cloud = new THREE.Mesh(cloudGeo, cloudMat);
-		cloud.scale.set(5000, 2000, 50);
-		cloud.position.y = 1000;
-		cloud.position.z = -16000-Math.random()*2000;
-		cloud.position.applyAxisAngle(new THREE.Vector3(1, 0, 0), Math.random()*Math.PI*0.2);
-		cloud.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.random()*Math.PI*2);
-		cloud.lookAt(new THREE.Vector3(0, 0, 0));
-		cloudObj.add(cloud);
+	var angleMin = Math.PI/5;
+	var angleMax = Math.PI/2;
+	var cloudGeo = new THREE.RingGeometry(angleMin, angleMax, 128, 32);
+	noise.seed(Math.random())
+	for (var i = 0; i < cloudGeo.vertices.length; ++i) {
+		var vert = cloudGeo.vertices[i];
+		var angle = vert.length()
+		
+		var pos = ((2 * (angle - angleMin) / (angleMax - angleMin)) - 1);
+		var offset = -Math.pow(pos, 6);
+		offset += noise.perlin2(vert.x*2, vert.y*2);
+		offset += (0.5 * (noise.perlin2(100+vert.x*7, 100+vert.y*7) - 0.5));
+		
+		vert.normalize();
+		vert.applyEuler(new THREE.Euler(0, 0, Math.PI/2));
+		var vertNew = new THREE.Vector3(0, 0, -1);
+		vertNew.applyAxisAngle(vert, angle);
+		vert.copy(vertNew);
+		
+		vert.multiplyScalar(1 - (offset * 0.2));
 	}
-	obj.add(cloudObj);
+	var cloudMat = new THREE.MeshPhongMaterial({
+		shading: THREE.FlatShading, color: "#AAF", fog: false});
+	cloudMat.emissive = new THREE.Color("#AAA");
+	var cloud = new THREE.Mesh(cloudGeo, cloudMat);
+	cloud.scale.multiplyScalar(20000);
+	cloud.rotation.x = Math.PI/2;
+	obj.add(cloud);
 	
 	//Cloud rotation
 	updates.push(function(dt) {
-		cloudObj.rotation.y += (0.000005 * dt);
+		cloud.rotation.z -= (0.000005 * dt);
 	});
 	
 	return obj;
