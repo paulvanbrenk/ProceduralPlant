@@ -11,8 +11,8 @@ function environment() {
 		var vert = planeGeo.vertices[i];
 		var length = vert.length();
 		vert.z += (0.1 * (noise.perlin2(vert.x*10, vert.y*10) + length));
-		vert.x *= Math.pow(Math.abs(vert.x), 0.9);
-		vert.y *= Math.pow(Math.abs(vert.y), 0.9);
+		vert.x *= Math.pow(Math.abs(length), 0.9);
+		vert.y *= Math.pow(Math.abs(length), 0.9);
 		vert.z *= Math.pow(length, 2);
 		vert.multiplyScalar(10000);
 	}
@@ -26,7 +26,7 @@ function environment() {
 	obj.add(plane);
 	
 	//Sky sphere
-	var skyGeo = new THREE.IcosahedronGeometry(15000, 4)
+	var skyGeo = new THREE.IcosahedronGeometry(20000, 4)
 	for (var i = 0; i < skyGeo.vertices.length; ++i) {
 		skyGeo.vertices[i].multiplyScalar(-1);
 	}
