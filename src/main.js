@@ -58,7 +58,7 @@ function regenerate_tree(){
 
 
 window.onload = function() {
-	renderer = new THREE.WebGLRenderer({antialias: true});
+	renderer = new THREE.WebGLRenderer({antialias: true, logarithmicDepthBuffer: true});
 	document.body.appendChild(renderer.domElement);
 	renderer.setClearColor("white", 1);
 	
