@@ -93,34 +93,34 @@ window.onload = function() {
 			
 	params = {
 		seed: 5555,
-		TRUNK: 50,           // Number of trunk segments
-		BRANCH: 9,           // Number of branch segments
-		MIN_AREA: 0.1,       // Minimum area required so spawn a branch
+		TRUNK: 50,           // Number of trunk segments  // 0 - 150
+		BRANCH: 9,           // Number of branch segments // 0 - 30
+		MIN_AREA: 0.1,       // Minimum area required so spawn a branch // 0 - 0.5
 
-		HEIGHT: 0.7,         // Height of a segment
-		SCALE: 1.0,          // Scale of the entire tree
+		HEIGHT: 0.7,         // Height of a segment // 0.1 - 5
+		SCALE: 1.0,          // Scale of the entire tree // 0.1 - 50
 
-		DECAY: 0.03,         // Rate at which the trunk shrinks
-		B_DECAY: 0.2,        // Rate at which branches shrink
+		DECAY: 0.03,         // Rate at which the trunk shrinks // 0 - 1
+		B_DECAY: 0.2,        // Rate at which branches shrink // 0 - 1
 
-		SINE_DECAY: 0.1,     // Wavelike form decay
-		SINE_FREQ: 5,        // Rate of sine decay
+		SINE_DECAY: 0.1,     // Wavelike form decay // 0 - 1
+		SINE_FREQ: 5,        // Rate of sine decay // 0 - 20
 
-		WIGGLE: 0.005,       // Tendency of the trunk to curve
-		B_WIGGLE: 0.05,      // Tendency of the branches to curve
+		WIGGLE: 0.005,       // Tendency of the trunk to curve // 0 - 0.02
+		B_WIGGLE: 0.05,      // Tendency of the branches to curve // 0 - .3
 
-		CHANCE: 0.05,        // Base chance to spawn a branch
-		LEVEL_MOD: 0.1,      // Spawn chance penalty if you are a sub-branch (stacks infinitely)
-		B_NUM: 3,            // Maximum sub-branch level to spawn branches
+		CHANCE: 0.05,        // Base chance to spawn a branch // 0 - 0.2
+		LEVEL_MOD: 0.1,      // Spawn chance penalty if you are a sub-branch (stacks infinitely) // 0 - 0.3
+		B_NUM: 3,            // Maximum sub-branch level to spawn branches // 0 - 5
 
-		HEIGHT_MOD: 0.9,         // Branches spawn more often here, where 1 is the top of the tree
-		HEIGHT_WEIGHT: 0.1,      // Influnce of the height modifier
-		HEIGHT_THRESHOLD: 0.5,   // Difference at which no branches will grow
+		HEIGHT_MOD: 0.9,         // Branches spawn more often here, where 1 is the top of the tree // 0 - 1
+		HEIGHT_WEIGHT: 0.1,      // Influnce of the height modifier // 0 - 0.3
+		HEIGHT_THRESHOLD: 0.5,   // Difference at which no branches will grow // 0 - 1
 
-		LEAF_FREQ: 0.08,         // Frequency of leaf generation
-		LEAF_MOD: 0.5,           // Tendency of leaves to grow at a position, where 1 is the tip of a branch
-		LEAF_WEIGHT: 0.1,        // Influence of the lead modifier
-		COLOR: "#553311"    // Tree color
+		LEAF_FREQ: 0.08,         // Frequency of leaf generation // 0 - .3
+		LEAF_MOD: 0.5,           // Tendency of leaves to grow at a position, where 1 is the tip of a branch // 0 - 1
+		LEAF_WEIGHT: 0.1,        // Influence of the lead modifier // 0 - 0.3
+		COLOR: "#553311"         // Tree color
 		
 	};
 			
