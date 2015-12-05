@@ -32,7 +32,7 @@ var MIN_AREA = 0.1;       // Minimum area required so spawn a branch
 var COLOR = "#553311";    // Tree color
 
 var HEIGHT = 0.7;         // Height of a segment
-var SCALE = 1.0;          // Scale of the entire tree
+var SCALE = 3.0;          // Scale of the entire tree
 
 var DECAY = 0.03;         // Rate at which the trunk shrinks
 var B_DECAY = 0.2;        // Rate at which branches shrink
@@ -65,6 +65,11 @@ var triangle = new THREE.Triangle(
 
 function getLeaves() {
   return leaves;
+}
+
+function LeafObj(vertex,rotation) {
+  this.vertex = vertex;
+  this.rotation = rotation;
 }
 
 // Stores an external (visible) triangle of the tree
@@ -244,5 +249,10 @@ function plantMesh1(scene) {
 
   // Return final mesh
   currentIndex = 0;
+  wiggleVec = new THREE.Vector3(0,0,0);
+  segments = [];
+  leaves = [];
+  firstSegment = 0;
+  treeHeight = 0;
   return new THREE.Mesh(geometry,material);
 }
