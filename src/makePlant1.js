@@ -6,14 +6,14 @@
 
 var inputString = "0123456789abcdef0123456789abcdef";
 var inputArray = [];
-var rand = 0;
+var randArray = [];
 
 for (var i = 0; i < inputString.length; i++) {
   inputArray.push(parseInt(inputString.charAt(i),16));
-  rand += inputArray[i];
 }
-
-rand = rand / (inputString.length * 15.0);
+for (var i = 0; i < inputString.length - 3; i++) {
+  randArray.push((inputArray[i] + inputArray[i+1] + inputArray[i+2] + inputArray[i+3])/60.0);
+}
 
 // Variables --- o
 
@@ -28,6 +28,8 @@ var debug = false;
 var TRUNK = 30;           // Number of trunk segments
 var BRANCH = 6;           // Number of branch segments
 var MIN_AREA = 0.1;       // Minimum area required so spawn a branch
+
+var COLOR = "#553311";    // Tree color
 
 var HEIGHT = 0.7;         // Height of a segment
 var SCALE = 1.0;          // Scale of the entire tree
@@ -202,7 +204,7 @@ function plantMesh1(scene) {
 
   // Create base geometry and material
   var geometry = new THREE.Geometry();
-  var material = new THREE.MeshPhongMaterial({wireframe: debug, color: "#553311"});
+  var material = new THREE.MeshPhongMaterial({wireframe: debug, color: COLOR});
   material.shading = THREE.FlatShading;
 
   // Create initial triangle
