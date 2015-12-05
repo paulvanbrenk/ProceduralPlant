@@ -39,6 +39,10 @@ function regenerate_tree(){
 		//scene.remove( leafObjs[i] );
 	//}
 	scene.remove(plantObj);
+  for (var i = 0; i < leafObjs.length; i++) {
+    scene.remove(leafObjs[i]);
+  }
+  leafObjs = [];
 	
 	plantObj = plantMesh1(params);
 	scene.add(plantObj);
@@ -49,7 +53,6 @@ function regenerate_tree(){
 		leafObjs.push(leafObj); //keep reference for now
 		scene.add( leafObj );
 	}
-  console.log(leaves);
 	leaves = [];
 }
 
@@ -90,8 +93,8 @@ window.onload = function() {
 			
 	params = {
 		seed: 5555,
-		TRUNK: 30,           // Number of trunk segments
-		BRANCH: 6,           // Number of branch segments
+		TRUNK: 50,           // Number of trunk segments
+		BRANCH: 9,           // Number of branch segments
 		MIN_AREA: 0.1,       // Minimum area required so spawn a branch
 
 		HEIGHT: 0.7,         // Height of a segment
@@ -114,7 +117,7 @@ window.onload = function() {
 		HEIGHT_WEIGHT: 0.1,      // Influnce of the height modifier
 		HEIGHT_THRESHOLD: 0.5,   // Difference at which no branches will grow
 
-		LEAF_FREQ: 0.04,         // Frequency of leaf generation
+		LEAF_FREQ: 0.08,         // Frequency of leaf generation
 		LEAF_MOD: 0.5,           // Tendency of leaves to grow at a position, where 1 is the tip of a branch
 		LEAF_WEIGHT: 0.1,        // Influence of the lead modifier
 		COLOR: "#553311"    // Tree color
