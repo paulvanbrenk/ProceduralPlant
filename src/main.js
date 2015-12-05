@@ -58,7 +58,7 @@ function regenerate_tree(){
 
 
 window.onload = function() {
-	renderer = new THREE.WebGLRenderer({antialias: true});
+	renderer = new THREE.WebGLRenderer({antialias: true, logarithmicDepthBuffer: true});
 	document.body.appendChild(renderer.domElement);
 	renderer.setClearColor("white", 1);
 	
@@ -71,8 +71,7 @@ window.onload = function() {
 		0.1, //Near plane
 		50000 //Far plane
 	);
-	camera.position.set(-40, 10, 40);
-	camera.lookAt(new THREE.Vector3(0, 10, 0));
+	camera.position.set(-75, 25, 75);
 	
 	scene.add(environment());
 	
@@ -205,6 +204,7 @@ window.onload = function() {
 	// Controls
 				
 	controls = new THREE.TrackballControls( camera , renderer.domElement );
+	controls.target.set(0, 20, 0);
 
 	controls.rotateSpeed = 1.0;
 	controls.zoomSpeed = 1.2;
