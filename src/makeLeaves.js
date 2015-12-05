@@ -94,12 +94,12 @@ function generate_leaf_geometry(divisions,length,width,mode) {
 function generate_leaf_object(position){
 	
 	divisions = 20;
-	length = 1;
-	width = 1;
+	length = 10;
+	width = 10;
 	mode = 1;
 	
 	var leafObj = new THREE.Mesh( generate_leaf_geometry(divisions,length,width,mode), leafmaterial);
-	leafObj.position = position;
+	leafObj.position.set(position.x,position.y,position.z);// = position;
 	return leafObj;
 	
 }

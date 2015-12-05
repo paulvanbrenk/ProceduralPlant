@@ -9,6 +9,8 @@ redraw = function() {
 	camera.updateProjectionMatrix();
 	
 	renderer.render(scene, camera);
+	
+	controls.update();
 }
 
 var timeLast = performance.now();
@@ -50,6 +52,8 @@ window.onload = function() {
 	for(var i=0; i< leafList.length; i++){
 		var leafObj = generate_leaf_object(leafList[i]);
 		//do merge here
+		
+		scene.add( leafObj );
 	}
 	leafList = [];
 	
