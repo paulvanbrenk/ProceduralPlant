@@ -25,7 +25,6 @@ var segments = [];
 var leaves = [];
 var firstSegment = 0;
 var treeHeight = 0;
-var debug = false;
 
 var DECAY = 0.03;         // Rate at which the trunk shrinks
 var WIGGLE = 0.005;       // Tendency of the trunk to curve
@@ -201,7 +200,7 @@ function plantMesh1(vars) {
 
   // Create base geometry and material
   var geometry = new THREE.Geometry();
-  var material = new THREE.MeshPhongMaterial({wireframe: debug, color: params.COLOR});
+  var material = new THREE.MeshPhongMaterial({wireframe: params.WIREFRAME, color: params.COLOR});
   material.shading = THREE.FlatShading;
 
   // Create initial triangle

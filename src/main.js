@@ -120,7 +120,10 @@ window.onload = function() {
 		LEAF_FREQ: 0.08,         // Frequency of leaf generation // 0 - .3
 		LEAF_MOD: 0.5,           // Tendency of leaves to grow at a position, where 1 is the tip of a branch // 0 - 1
 		LEAF_WEIGHT: 0.1,        // Influence of the lead modifier // 0 - 0.3
-		COLOR: "#553311"         // Tree color
+    
+		COLOR: "#553311",        // Tree color
+    
+    WIREFRAME: false         // Display wireframe
 		
 	};
 			
@@ -187,6 +190,12 @@ window.onload = function() {
 		regenerate_tree();	
 	});
 	gui.add(params, 'LEAF_WEIGHT').onFinishChange(function(value){
+		regenerate_tree();	
+	});
+  gui.add(params, 'COLOR').onFinishChange(function(value){
+		regenerate_tree();	
+	});
+  gui.add(params, 'WIREFRAME').onFinishChange(function(value){
 		regenerate_tree();	
 	});
 	
