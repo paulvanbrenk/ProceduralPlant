@@ -36,8 +36,14 @@ function environment() {
 	skyMat.emissive = new THREE.Color("#447");
 	skyMat.shininess = 0;
 	var sky = new THREE.Mesh(skyGeo, skyMat);
-	sky.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, Math.random()*Math.PI);
+	sky.rotation.set(0, Math.random()*Math.PI, Math.random()*Math.PI);
 	obj.add(sky);
+	
+	//Sky rotation
+	updates.push(function(dt) {
+		sky.rotation.y += (0.000005 * dt);
+		sky.rotation.z += (0.000001 * dt);
+	});
 	
 	return obj;
 }

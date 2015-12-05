@@ -3,6 +3,28 @@
 
 var renderer, scene, camera;
 
+redraw = function() {
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	camera.aspect = (window.innerWidth / window.innerHeight);
+	camera.updateProjectionMatrix();
+	
+	renderer.render(scene, camera);
+}
+
+var timeLast = performance.now();
+var updates = [];
+
+update = function(time) {
+	var dt = (time - timeLast);
+	timeLast = time;
+	for (var i = 0; i < updates.length; ++i) {
+		updates[i](dt);
+	}
+	redraw();
+	window.requestAnimationFrame(update)
+}
+
+
 window.onload = function() {
 	renderer = new THREE.WebGLRenderer({antialias: true});
 	document.body.appendChild(renderer.domElement);
@@ -35,12 +57,6 @@ window.onload = function() {
 	
 	window.onresize = redraw;
 	window.onresize();
-}
-
-redraw = function() {
-	renderer.setSize(window.innerWidth, window.innerHeight);
-	camera.aspect = (window.innerWidth / window.innerHeight);
-	camera.updateProjectionMatrix();
 	
-	renderer.render(scene, camera);
+	window.requestAnimationFrame(update)
 }
