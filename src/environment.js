@@ -11,8 +11,8 @@ function environment() {
 		var vert = planeGeo.vertices[i];
 		var length = vert.length();
 		vert.z += (0.1 * (noise.perlin2(vert.x*10, vert.y*10) + length));
-		vert.x *= Math.pow(Math.abs(vert.x), 0.9);
-		vert.y *= Math.pow(Math.abs(vert.y), 0.9);
+		vert.x *= Math.pow(Math.abs(length), 0.9);
+		vert.y *= Math.pow(Math.abs(length), 0.9);
 		vert.z *= Math.pow(length, 2);
 		vert.multiplyScalar(10000);
 	}
@@ -26,7 +26,7 @@ function environment() {
 	obj.add(plane);
 	
 	//Sky sphere
-	var skyGeo = new THREE.IcosahedronGeometry(15000, 4)
+	var skyGeo = new THREE.IcosahedronGeometry(20000, 4)
 	for (var i = 0; i < skyGeo.vertices.length; ++i) {
 		skyGeo.vertices[i].multiplyScalar(-1);
 	}
@@ -36,8 +36,14 @@ function environment() {
 	skyMat.emissive = new THREE.Color("#447");
 	skyMat.shininess = 0;
 	var sky = new THREE.Mesh(skyGeo, skyMat);
-	sky.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, Math.random()*Math.PI);
+	sky.rotation.set(0, Math.random()*Math.PI, Math.random()*Math.PI);
 	obj.add(sky);
+	
+	//Sky rotation
+	updates.push(function(dt) {
+		sky.rotation.y += (0.000005 * dt);
+		sky.rotation.z += (0.000001 * dt);
+	});
 	
 	return obj;
 }
