@@ -45,37 +45,42 @@ function environment() {
 		sky.rotation.z += (0.000001 * dt);
 	});
 	
-	//Cloud
+	//Clouds
 	var cloudObj = new THREE.Object3D();
-	var cloudGeo = new THREE.PlaneGeometry(2, 2, 24, 24);
-	noise.seed(Math.random())
-	for (var i = 0; i < cloudGeo.vertices.length; ++i) {
-		var vert = cloudGeo.vertices[i];
-		var length = vert.length();
-		vert.z += (noise.perlin2(vert.x*2, vert.y*2) * 2);
-		vert.z -= (Math.pow(length, 2) * 2);
-	}
-	var cloudV = cloudGeo.vertices;
-	for (var i = 0; i < cloudGeo.faces.length; ++i) {
-		var face = cloudGeo.faces[i];
-		if (Math.min(cloudV[face.a].z, cloudV[face.b].z, cloudV[face.c].z) < -1) {
-			face.materialIndex = 1;
-		}
-	}
-	cloudGeo.verticesNeedUpdate = true;
-	cloudGeo.computeFaceNormals();
-	cloudGeo.computeVertexNormals();
 	var cloudMatVis = new THREE.MeshPhongMaterial({
 		shading: THREE.FlatShading, color: "#AAF", fog: false});
 	cloudMatVis.emissive = new THREE.Color("#AAA");
 	var cloudMatHid = new THREE.MeshLambertMaterial();
 	cloudMatHid.visible = false;
 	var cloudMat = new THREE.MeshFaceMaterial([cloudMatVis, cloudMatHid]);
-	var cloud = new THREE.Mesh(cloudGeo, cloudMat);
-	cloud.scale.set(2000, 1000, 30);
-	cloud.position.y = 3000;
-	cloud.position.z = -16000;
-	cloudObj.add(cloud);
+	for (var cloudIndex = 0; cloudIndex < 16; ++cloudIndex) {
+		var cloudGeo = new THREE.PlaneGeometry(2, 2, 16, 16);
+		noise.seed(Math.random())
+		for (var i = 0; i < cloudGeo.vertices.length; ++i) {
+			var vert = cloudGeo.vertices[i];
+			var length = vert.length();
+			vert.z += (noise.perlin2(vert.x*2, vert.y*2) * 2);
+			vert.z -= (Math.pow(length, 2) * 2);
+		}
+		var cloudV = cloudGeo.vertices;
+		for (var i = 0; i < cloudGeo.faces.length; ++i) {
+			var face = cloudGeo.faces[i];
+			if (Math.min(cloudV[face.a].z, cloudV[face.b].z, cloudV[face.c].z) < -1) {
+				face.materialIndex = 1;
+			}
+		}
+		cloudGeo.verticesNeedUpdate = true;
+		cloudGeo.computeFaceNormals();
+		cloudGeo.computeVertexNormals();
+		var cloud = new THREE.Mesh(cloudGeo, cloudMat);
+		cloud.scale.set(3000, 1500, 30);
+		cloud.position.y = 1000;
+		cloud.position.z = -16000;
+		cloud.position.applyAxisAngle(new THREE.Vector3(1, 0, 0), Math.random()*Math.PI*0.3);
+		cloud.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.random()*Math.PI*2);
+		cloud.lookAt(new THREE.Vector3(0, 0, 0));
+		cloudObj.add(cloud);
+	}
 	obj.add(cloudObj);
 	
 	//Cloud rotation
