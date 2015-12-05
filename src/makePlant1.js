@@ -2,46 +2,41 @@
 // Code to create a plant #1 //
 //---------------------------//
 
+// Random number generation --- o
+
+var inputString = "0123456789abcdef0123456789abcdef";
+var inputArray = [];
+var randArray = [];
+
+for (var i = 0; i < inputString.length; i++) {
+  inputArray.push(parseInt(inputString.charAt(i),16));
+}
+for (var i = 0; i < inputString.length - 3; i++) {
+  randArray.push((inputArray[i] + inputArray[i+1] + inputArray[i+2] + inputArray[i+3])/60.0);
+}
+
 // Variables --- o
+
+var params;
 
 var currentIndex = 0;
 var wiggleVec = new THREE.Vector3(0,0,0);
 var segments = [];
+var leaves = [];
 var firstSegment = 0;
 var treeHeight = 0;
-var debug = false;
 
-var TRUNK = 50;           // Number of trunk segments
-var BRANCH = 5;           // Number of branch segments
-var MIN_AREA = 0.1;       // Minimum area required so spawn a branch
-
-var HEIGHT = 0.5;         // Height of a segment
-var SCALE = 1.0;          // Scale of the entire tree
-
-var DECAY = 0.02;         // Rate at which the trunk shrinks
-var B_DECAY = 0.4;        // Rate at which branches shrink
-
-var SINE_DECAY = 0.2;      // Wavelike form decay
-var SINE_FREQ = 5;         // Rate of sine decay
-
+var DECAY = 0.03;         // Rate at which the trunk shrinks
 var WIGGLE = 0.005;       // Tendency of the trunk to curve
-var B_WIGGLE = 0.05;      // Tendency of the branches to curve
 
-var CHANCE = 0.97;       // Base chance to spawn a branch
-var LEVEL_MOD = 0.15;     // Spawn chance penalty if you are a sub-branch (stacks infinitely)
-var B_NUM = 3;            // Maximum sub-branch level to spawn branches
-
-var HEIGHT_MOD = 0.8;        // Branches spawn more often here, where 1 is the top of the tree
-var HEIGHT_WEIGHT = 0.1;     // Influnce of the height modifier
-var HEIGHT_THRESHOLD = 0.5;  // Difference at which no branches will grow
-
-var triangle = new THREE.Triangle(
-  new THREE.Vector3(-1,0,-.5).multiplyScalar(SCALE),
-  new THREE.Vector3(0,0,.75).multiplyScalar(SCALE),
-  new THREE.Vector3(1,0,-.5).multiplyScalar(SCALE)
-);
+var triangle;
 
 // Functions --- o
+
+function LeafObj(vertex,rotation) {
+  this.position = vertex;
+  this.rotation = rotation;
+}
 
 // Stores an external (visible) triangle of the tree
 function Segment(p0,p1,p2,i0,i1,i2) {
@@ -58,9 +53,9 @@ function branchChance(segment,level) {
   if (treeHeight != 0) {
     hDiff = segment.height/treeHeight;
   }
-  hDiff = Math.abs(hDiff - HEIGHT_MOD);
-  if (hDiff > HEIGHT_THRESHOLD) {return false;}
-  return (Math.random() > ( CHANCE  +  level*LEVEL_MOD  +  (1-hDiff)*-HEIGHT_WEIGHT ) && segment.tri.area() > MIN_AREA);
+  hDiff = Math.abs(hDiff - params.HEIGHT_MOD);
+  if (hDiff > params.HEIGHT_THRESHOLD) {return false;}
+  return (random() < ( params.CHANCE  -  level*params.LEVEL_MOD  -  (1-hDiff)*-params.HEIGHT_WEIGHT ) && segment.tri.area() > params.MIN_AREA);
 }
 
 // Align a triangle with a vector (relative to its center).
@@ -109,7 +104,7 @@ function capTriangle(geometry,offset,tri,indices) {
 function addTriangle(geometry,offset,tri,indices) {
 
   var newTri = tri.clone();
-  scale = DECAY + Math.sin(segments.length*SINE_FREQ)*SINE_DECAY;
+  scale = DECAY + Math.sin(segments.length*params.SINE_FREQ)*params.SINE_DECAY;
   newTri = tScale(newTri,scale);
   newTri = tAlign(newTri,offset);
   newTri = new THREE.Triangle( newTri.a.add(offset), newTri.b.add(offset), newTri.c.add(offset) );
@@ -146,24 +141,40 @@ function branch(geometry,tri,indices,repeat,level) {
   var temp = tri.clone();
   wiggleVec = new THREE.Vector3(0,0,0);
   for (var i = 0; i < repeat; i++) {
-    wiggleVec.add( new THREE.Vector3(WIGGLE*((Math.random()*2)-1), WIGGLE*((Math.random()*2)-1), WIGGLE*((Math.random()*2)-1)) );
-    var direction = temp.plane().normalize().normal.multiplyScalar(HEIGHT);
+    wiggleVec.add( new THREE.Vector3(WIGGLE*((random()*2)-1), WIGGLE*((random()*2)-1), WIGGLE*((random()*2)-1)) );
+    var direction = temp.plane().normalize().normal.multiplyScalar(params.HEIGHT);
     if (i == 0) {
       temp = addTriangle(geometry,direction.add(wiggleVec),temp,indices);
     }
     else {
       temp = addTriangle(geometry,direction.add(wiggleVec),temp,new THREE.Vector3(currentIndex-3,currentIndex-2,currentIndex-1));
-    }    
+    }
+    
+    // Leaves
+    var temp2 = temp.clone();
+    var midpoint = temp.midpoint();
+    if (random() < params.LEAF_FREQ) {
+      leaves.push(new LeafObj( temp2.a, new THREE.Vector3().subVectors(temp2.a,midpoint).normalize() ));
+    }
+    
+    if (random() < params.LEAF_FREQ) {
+      leaves.push(new LeafObj( temp2.b, new THREE.Vector3().subVectors(temp2.a,midpoint).normalize() ));
+    }
+    
+    if (random() < params.LEAF_FREQ) {
+      leaves.push(new LeafObj( temp2.c, new THREE.Vector3().subVectors(temp2.a,midpoint).normalize() ));
+    }
+    
   }
   
   // Branches spawn more branches
-  if (level < B_NUM) {
+  if (level < params.B_NUM) {
     var start = firstSegment;
     var end = segments.length;
     firstSegment = segments.length;
     for (var i = start; i < end; i++) {
       if (branchChance(segments[i],level)) {
-        branch(geometry,segments[i].tri,segments[i].indices,BRANCH,level+1);
+        branch(geometry,segments[i].tri,segments[i].indices,params.BRANCH,level+1);
       }
     }
   }
@@ -171,11 +182,25 @@ function branch(geometry,tri,indices,repeat,level) {
 }
 
 // Main function
-function plantMesh1(scene) {
+function plantMesh1(vars) {
+	
+	console.log(vars);
+  
+  // Get input variables
+  params = vars;
+  DECAY = params.DECAY;
+  WIGGLE = params.WIGGLE;
+  
+  triangle = new THREE.Triangle(
+  new THREE.Vector3(-1,0,-.5).multiplyScalar(params.SCALE),
+  new THREE.Vector3(0,0,.75).multiplyScalar(params.SCALE),
+  new THREE.Vector3(1,0,-.5).multiplyScalar(params.SCALE)
+	);
+
 
   // Create base geometry and material
   var geometry = new THREE.Geometry();
-  var material = new THREE.MeshPhongMaterial({wireframe: debug, color: "#553311"});
+  var material = new THREE.MeshPhongMaterial({wireframe: params.WIREFRAME, color: params.COLOR});
   material.shading = THREE.FlatShading;
 
   // Create initial triangle
@@ -189,31 +214,35 @@ function plantMesh1(scene) {
   currentIndex += 3;
   
   // Trunk
-  for (var i = 0; i < TRUNK; i++) {
-    wiggleVec.add( new THREE.Vector3(WIGGLE*((Math.random()*2)-1), WIGGLE*((Math.random()*2)-1), WIGGLE*((Math.random()*2)-1)) );
-    var direction = T.plane().normalize().normal.multiplyScalar(HEIGHT);
+  for (var i = 0; i < params.TRUNK; i++) {
+    wiggleVec.add( new THREE.Vector3(WIGGLE*((random()*2)-1), WIGGLE*((random()*2)-1), WIGGLE*((random()*2)-1)) );
+    var direction = T.plane().normalize().normal.multiplyScalar(params.HEIGHT);
     T = addTriangle(geometry,direction.add(wiggleVec),T,new THREE.Vector3(currentIndex-3,currentIndex-2,currentIndex-1));
   }
   
-  wiggleVec.add( new THREE.Vector3(WIGGLE*((Math.random()*2)-1), WIGGLE*((Math.random()*2)-1), WIGGLE*((Math.random()*2)-1)) );
-  var direction = T.plane().normalize().normal.multiplyScalar(HEIGHT);
+  wiggleVec.add( new THREE.Vector3(WIGGLE*((random()*2)-1), WIGGLE*((random()*2)-1), WIGGLE*((random()*2)-1)) );
+  var direction = T.plane().normalize().normal.multiplyScalar(params.HEIGHT);
   T = capTriangle(geometry,direction,T,new THREE.Vector3(currentIndex-3,currentIndex-2,currentIndex-1));
   
   // Branches
-  DECAY = B_DECAY;
-  WIGGLE = B_WIGGLE;
-  if (B_NUM > 0) {
+  DECAY = params.B_DECAY;
+  WIGGLE = params.B_WIGGLE;
+  if (params.B_NUM > 0) {
     firstSegment = segments.length;
     var end = segments.length;
     for (var i = 0; i < end; i++) {
       if (branchChance(segments[i],0)) {
-        branch(geometry,segments[i].tri,segments[i].indices,BRANCH,0);
+        branch(geometry,segments[i].tri,segments[i].indices,params.BRANCH,0);
       }
     }
   }
-  console.log(segments.length);
+  console.log(leaves.length);
 
   // Return final mesh
   currentIndex = 0;
+  wiggleVec = new THREE.Vector3(0,0,0);
+  segments = [];
+  firstSegment = 0;
+  treeHeight = 0;
   return new THREE.Mesh(geometry,material);
 }
