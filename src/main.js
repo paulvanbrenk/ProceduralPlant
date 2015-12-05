@@ -2,6 +2,7 @@
 //The main script, which initializes everything else
 
 var renderer, scene, camera;
+var params;
 
 redraw = function() {
 	renderer.setSize(window.innerWidth, window.innerHeight);
@@ -30,6 +31,7 @@ var plantObj;
 var leafObjs = [];
 
 function regenerate_tree(){
+	random = new Math.seedrandom(params.seed);
 	
 	//delete old objects
 	
@@ -38,7 +40,7 @@ function regenerate_tree(){
 	//}
 	scene.remove(plantObj);
 	
-	plantObj = plantMesh1()
+	plantObj = plantMesh1(params);
 	scene.add(plantObj);
 	/*var leafList = getLeaves();//list of points to put leaves on
 	for(var i=0; i< leafList.length; i++){
@@ -70,7 +72,7 @@ window.onload = function() {
 	
 	scene.add(environment());
 	
-	regenerate_tree();
+	
 	
 	var light = new THREE.DirectionalLight("white");
 	light.position.set(-15, 25, 10);
@@ -81,7 +83,7 @@ window.onload = function() {
 	
 	var gui = new dat.GUI({});
 			
-	var params = {
+	params = {
 		seed: 5555,
 		TRUNK: 30,           // Number of trunk segments
 		BRANCH: 6,           // Number of branch segments
@@ -110,6 +112,7 @@ window.onload = function() {
 		LEAF_FREQ: 0.04,         // Frequency of leaf generation
 		LEAF_MOD: 0.5,           // Tendency of leaves to grow at a position, where 1 is the tip of a branch
 		LEAF_WEIGHT: 0.1,        // Influence of the lead modifier
+		COLOR: "#553311"    // Tree color
 		
 	};
 			
@@ -178,6 +181,8 @@ window.onload = function() {
 	gui.add(params, 'LEAF_WEIGHT').onFinishChange(function(value){
 		regenerate_tree();	
 	});
+	
+	regenerate_tree();
 	
 	
 	// Controls
