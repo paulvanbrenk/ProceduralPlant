@@ -131,64 +131,64 @@ window.onload = function() {
 		leafmaterial = new THREE.MeshPhongMaterial( { color: random()*0xffffff, specular: random()*0xffffff, shininess: 5, morphTargets: true, vertexColors: THREE.FaceColors, shading: THREE.FlatShading } );		
 		regenerate_tree();
 	});
-	gui.add(params, 'TRUNK').onFinishChange(function(value){
+	gui.add(params, 'TRUNK').min(0).max(150).onFinishChange(function(value){
 		regenerate_tree();	
 	})
-	gui.add(params, 'BRANCH').onFinishChange(function(value){
+	gui.add(params, 'BRANCH').min(0).max(30).onFinishChange(function(value){
 		regenerate_tree();	
 	});
-	gui.add(params, 'MIN_AREA').onFinishChange(function(value){
+	gui.add(params, 'MIN_AREA').min(0).max(.5).onFinishChange(function(value){
 		regenerate_tree();
 	});
-	gui.add(params, 'HEIGHT').onFinishChange(function(value){
+	gui.add(params, 'HEIGHT').min(.1).max(5).onFinishChange(function(value){
 		regenerate_tree();	
 	});
-	gui.add(params, 'SCALE').onFinishChange(function(value){
+	gui.add(params, 'SCALE').min(.1).max(50).onFinishChange(function(value){
 		regenerate_tree();	
 	});
-	gui.add(params, 'DECAY').onFinishChange(function(value){
+	gui.add(params, 'DECAY').min(0).max(1).onFinishChange(function(value){
 		regenerate_tree();	
 	});
-	gui.add(params, 'B_DECAY').onFinishChange(function(value){
+	gui.add(params, 'B_DECAY').min(0).max(1).onFinishChange(function(value){
 		regenerate_tree();	
 	});
-	gui.add(params, 'SINE_DECAY').onFinishChange(function(value){
+	gui.add(params, 'SINE_DECAY').min(0).max(1).onFinishChange(function(value){
 		regenerate_tree();	
 	});
-	gui.add(params, 'SINE_FREQ').onFinishChange(function(value){
+	gui.add(params, 'SINE_FREQ').min(0).max(20).onFinishChange(function(value){
 		regenerate_tree();	
 	});
-	gui.add(params, 'WIGGLE').onFinishChange(function(value){
+	gui.add(params, 'WIGGLE').min(0).max(.02).onFinishChange(function(value){
 		regenerate_tree();	
 	});
-	gui.add(params, 'B_WIGGLE').onFinishChange(function(value){
+	gui.add(params, 'B_WIGGLE').min(0).max(.3).onFinishChange(function(value){
 		regenerate_tree();	
 	});
-	gui.add(params, 'CHANCE').onFinishChange(function(value){
+	gui.add(params, 'CHANCE').min(0).max(.2).onFinishChange(function(value){
 		regenerate_tree();	
 	});
-	gui.add(params, 'LEVEL_MOD').onFinishChange(function(value){
+	gui.add(params, 'LEVEL_MOD').min(0).max(.3).onFinishChange(function(value){
 		regenerate_tree();	
 	});
-	gui.add(params, 'B_NUM').onFinishChange(function(value){
+	gui.add(params, 'B_NUM').min(0).max(5).onFinishChange(function(value){
 		regenerate_tree();	
 	});
-	gui.add(params, 'HEIGHT_MOD').onFinishChange(function(value){
+	gui.add(params, 'HEIGHT_MOD').min(0).max(1).onFinishChange(function(value){
 		regenerate_tree();	
 	});
-	gui.add(params, 'HEIGHT_WEIGHT').onFinishChange(function(value){
+	gui.add(params, 'HEIGHT_WEIGHT').min(0).max(.3).onFinishChange(function(value){
 		regenerate_tree();	
 	});
-	gui.add(params, 'HEIGHT_THRESHOLD').onFinishChange(function(value){
+	gui.add(params, 'HEIGHT_THRESHOLD').min(0).max(1).onFinishChange(function(value){
 		regenerate_tree();	
 	});
-	gui.add(params, 'LEAF_FREQ').onFinishChange(function(value){
+	gui.add(params, 'LEAF_FREQ').min(0).max(.3).onFinishChange(function(value){
 		regenerate_tree();	
 	});
-	gui.add(params, 'LEAF_MOD').onFinishChange(function(value){
+	gui.add(params, 'LEAF_MOD').min(0).max(1).onFinishChange(function(value){
 		regenerate_tree();	
 	});
-	gui.add(params, 'LEAF_WEIGHT').onFinishChange(function(value){
+	gui.add(params, 'LEAF_WEIGHT').min(0).max(.3).onFinishChange(function(value){
 		regenerate_tree();	
 	});
   gui.add(params, 'COLOR').onFinishChange(function(value){
