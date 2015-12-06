@@ -151,6 +151,9 @@ function branch(geometry,tri,indices,repeat,level) {
     }
     
     // Leaves
+    
+    //var modifier = (i+1) / repeat;
+    //modifier = Math.abs(modifier - params.LEAF_MOD);
     var temp2 = temp.clone();
     var midpoint = temp.midpoint();
     if (random() < params.LEAF_FREQ) {

@@ -153,8 +153,8 @@ window.onload = function() {
 		HEIGHT_THRESHOLD: 0.5,   // Difference at which no branches will grow // 0 - 1
 
 		LEAF_FREQ: 0.08,         // Frequency of leaf generation // 0 - .3
-		LEAF_MOD: 0.5,           // Tendency of leaves to grow at a position, where 1 is the tip of a branch // 0 - 1
-		LEAF_WEIGHT: 0.1,        // Influence of the lead modifier // 0 - 0.3
+		//LEAF_MOD: 0.5,           // Tendency of leaves to grow at a position, where 1 is the tip of a branch // 0 - 1
+		//LEAF_WEIGHT: 0.1,        // Influence of the lead modifier // 0 - 0.3
 		
 		LEAF_MODE: 1,
 		LEAF_LENGTH: 5,
@@ -237,12 +237,12 @@ window.onload = function() {
 	gui.add(params, 'LEAF_FREQ').min(0).max(.3).onFinishChange(function(value){
 		regenerate_tree();	
 	});
-	gui.add(params, 'LEAF_MOD').min(0).max(1).onFinishChange(function(value){
-		regenerate_tree();	
-	});
-	gui.add(params, 'LEAF_WEIGHT').min(0).max(.3).onFinishChange(function(value){
-		regenerate_tree();	
-	});
+	// gui.add(params, 'LEAF_MOD').min(0).max(1).onFinishChange(function(value){
+		// regenerate_tree();	
+	// });
+	// gui.add(params, 'LEAF_WEIGHT').min(0).max(.3).onFinishChange(function(value){
+		// regenerate_tree();	
+	//});
 	gui.add(params, 'WIREFRAME').onFinishChange(function(value){
 		random = new Math.seedrandom(value);
 		leafmaterial = new THREE.MeshPhongMaterial( { color: random()*0xffffff,
