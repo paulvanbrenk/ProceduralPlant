@@ -49,16 +49,13 @@ function environment() {
 	//Clouds
 	var angleMin = Math.PI/5;
 	var angleMax = Math.PI/2;
+	var cloudGeoVals = [];
 	var cloudGeo = new THREE.RingGeometry(angleMin, angleMax, 128, 32);
 	noise.seed(Math.random())
 	for (var i = 0; i < cloudGeo.vertices.length; ++i) {
 		var vert = cloudGeo.vertices[i];
+		cloudGeoVals.push(vert.clone());
 		var angle = vert.length()
-		
-		var pos = ((2 * (angle - angleMin) / (angleMax - angleMin)) - 1);
-		var offset = -Math.pow(pos, 6);
-		offset += noise.perlin2(vert.x*2, vert.y*2);
-		offset += (0.5 * (noise.perlin2(100+vert.x*7, 100+vert.y*7) - 0.5));
 		
 		vert.normalize();
 		vert.applyEuler(new THREE.Euler(0, 0, Math.PI/2));
@@ -66,7 +63,7 @@ function environment() {
 		vertNew.applyAxisAngle(vert, angle);
 		vert.copy(vertNew);
 		
-		vert.multiplyScalar(1 - (offset * 0.2));
+		
 	}
 	var cloudMat = new THREE.MeshPhongMaterial({
 		shading: THREE.FlatShading, color: "#AAF", fog: false});
@@ -77,7 +74,25 @@ function environment() {
 	obj.add(cloud);
 	
 	//Cloud rotation
+	var cloudTime = 0;
 	updates.push(function(dt) {
+		cloudTime += (0.000003 * dt);
+		for (var i = 0; i < cloud.geometry.vertices.length; ++i) {
+			var vert = cloud.geometry.vertices[i];
+			var vertOld = cloudGeoVals[i];
+			var angle = vertOld.length()
+			
+			var pos = ((2 * (angle - angleMin) / (angleMax - angleMin)) - 1);
+			var offset = -Math.pow(pos, 6);
+			offset += noise.perlin3(vertOld.x*2, vertOld.y*2, cloudTime);
+			offset += (0.5 * (noise.perlin3(100+vertOld.x*7, 100+vertOld.y*7, cloudTime) - 0.5));
+			
+			vert.normalize();
+			vert.multiplyScalar(1 - (offset * 0.2));
+		}
+		cloud.geometry.verticesNeedUpdate = true;
+		cloud.geometry.computeFaceNormals();
+		cloud.geometry.computeVertexNormals();
 		cloud.rotation.z -= (0.000005 * dt);
 	});
 	
