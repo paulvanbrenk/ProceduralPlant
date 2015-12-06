@@ -195,13 +195,13 @@ window.onload = function() {
 	gui.add(params, 'HEIGHT').min(.1).max(5).onFinishChange(function(value){
 		regenerate_tree();	
 	});
-	gui.add(params, 'SCALE').min(.1).max(50).onFinishChange(function(value){
+	gui.add(params, 'SCALE').min(.1).max(20).onFinishChange(function(value){
 		regenerate_tree();	
 	});
-	gui.add(params, 'DECAY').min(0).max(1).onFinishChange(function(value){
+	gui.add(params, 'DECAY').min(-.05).max(.05).onFinishChange(function(value){
 		regenerate_tree();	
 	});
-	gui.add(params, 'B_DECAY').min(0).max(1).onFinishChange(function(value){
+	gui.add(params, 'B_DECAY').min(-1).max(1).onFinishChange(function(value){
 		regenerate_tree();	
 	});
 	gui.add(params, 'SINE_DECAY').min(0).max(1).onFinishChange(function(value){
