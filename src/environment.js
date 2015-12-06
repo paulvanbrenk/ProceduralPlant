@@ -23,6 +23,7 @@ function environment() {
 	planeMat.shading = THREE.FlatShading;
 	var plane = new THREE.Mesh(planeGeo, planeMat);
 	plane.rotation.set(-Math.PI/2, 0, 0);
+	plane.receiveShadow = true;
 	obj.add(plane);
 	
 	//Sky sphere
@@ -79,6 +80,8 @@ function environment() {
 	updates.push(function(dt) {
 		cloud.rotation.z -= (0.000005 * dt);
 	});
+	
+	obj.receiveShadow = true;
 	
 	return obj;
 }

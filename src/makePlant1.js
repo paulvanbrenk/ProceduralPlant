@@ -198,10 +198,8 @@ function plantMesh1(vars) {
 	);
 
 
-  // Create base geometry and material
+  // Create base geometry
   var geometry = new THREE.Geometry();
-  var material = new THREE.MeshPhongMaterial({wireframe: params.WIREFRAME, color: params.COLOR});
-  material.shading = THREE.FlatShading;
 
   // Create initial triangle
   var T = triangle.clone();
@@ -244,5 +242,5 @@ function plantMesh1(vars) {
   segments = [];
   firstSegment = 0;
   treeHeight = 0;
-  return new THREE.Mesh(geometry,material);
+  return geometry;
 }

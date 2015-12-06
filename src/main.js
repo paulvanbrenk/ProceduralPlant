@@ -3,6 +3,9 @@
 
 var renderer, scene, camera;
 var params;
+var stats;
+
+var plantMaterial;
 
 redraw = function() {
 	renderer.setSize(window.innerWidth, window.innerHeight);
@@ -11,6 +14,7 @@ redraw = function() {
 	
 	renderer.render(scene, camera);
 	
+	stats.update();
 	controls.update();
 }
 
@@ -28,42 +32,44 @@ update = function(time) {
 }
 
 var plantObj;
-var leafObjs = [];
+var trunkObj;
+var leafObj;
 
 function regenerate_tree(){
 	random = new Math.seedrandom(params.seed);
-	
-	//delete old objects
-	
-	//for(var i=0; i< leafObjs.length; i++){
-		//scene.remove( leafObjs[i] );
-	//}
 	scene.remove(plantObj);
-  for (var i = 0; i < leafObjs.length; i++) {
-    scene.remove(leafObjs[i]);
-  }
-  leafObjs = [];
+	//scene.remove(leafObj);
 	
-	plantObj = plantMesh1(params);
-	scene.add(plantObj);
-	//list of points to put leaves on
+	//create plant object
+	plantObj = new THREE.Object3D();
+	plantObj.castShadow = true;
+	
+
+	//add trunk
+	trunkObj = new THREE.Mesh(plantMesh1(params),plantMaterial);
+	trunkObj.castShadow = true;
+	plantObj.add(trunkObj);
+	
+	leafObj = new THREE.Geometry();
+
+	//add leaves by looping over list of points
 	for(var i=0; i< leaves.length; i++){
-		var leafObj = generate_leaf_object(leaves[i]);
-		//do object merge here
-		leafObjs.push(leafObj); //keep reference for now
-		scene.add( leafObj );
+		var leaf = generate_leaf_object(leaves[i],params.LEAF_DIVISIONS,params.LEAF_LENGTH,params.LEAF_WIDTH,params.LEAF_MODE);
+		leaf.updateMatrix();
+		leafObj.merge(leaf.geometry, leaf.matrix);
+
 	}
+	leafObj = new THREE.Mesh( leafObj, leafmaterial );
+	leafObj.castShadow = true;
+	plantObj.add( leafObj );
+	
+	scene.add(plantObj);
+	
 	leaves = [];
 }
 
 
 window.onload = function() {
-	renderer = new THREE.WebGLRenderer({antialias: true, logarithmicDepthBuffer: true});
-	document.body.appendChild(renderer.domElement);
-	renderer.setClearColor("white", 1);
-	
-	scene = new THREE.Scene();
-	scene.fog = new THREE.FogExp2("#77E", 0.00008);
 	
 	camera = new THREE.PerspectiveCamera(
 		35,  //Field of view
@@ -73,17 +79,47 @@ window.onload = function() {
 	);
 	camera.position.set(-75, 25, 75);
 	
+	renderer = new THREE.WebGLRenderer({antialias: true, logarithmicDepthBuffer: true});
+	document.body.appendChild(renderer.domElement);
+	renderer.setClearColor("white", 1);
+	renderer.shadowMap.enabled = true;
+	
+	renderer.shadowMapSoft = true;
+
+	renderer.shadowCameraNear = 3;
+	renderer.shadowCameraFar = camera.far;
+	renderer.shadowCameraFov = 50;
+
+	renderer.shadowMapBias = 0.0039;
+	renderer.shadowMapDarkness = 0.5;
+	renderer.shadowMapWidth = 1024;
+	renderer.shadowMapHeight = 1024;
+	
+	scene = new THREE.Scene();
+	scene.fog = new THREE.FogExp2("#77E", 0.00008);
+	
+	
+	
 	scene.add(environment());
 	
 	
 	
 	var light = new THREE.DirectionalLight("white");
 	light.position.set(-15, 20, 10);
+	light.castShadow = true;
 	scene.add(light);
 	
 	var lightNight = new THREE.DirectionalLight("#EAF", 0.1);
 	lightNight.position.set(15, -25, -10);
+	lightNight.castShadow = true;
 	scene.add(lightNight);
+	
+	plantMaterial = new THREE.MeshPhongMaterial({color: random()*0xffffff,
+                                                specular: random()*0xffffff,
+												shininess: 5,
+												morphTargets: true,
+												vertexColors: THREE.FaceColors,
+												shading: THREE.FlatShading});
 	
 	
 	//GUI
@@ -91,7 +127,7 @@ window.onload = function() {
 	var gui = new dat.GUI({});
 			
 	params = {
-		seed: 5555,
+		seed: 2277,
 		TRUNK: 50,           // Number of trunk segments  // 0 - 150
 		BRANCH: 9,           // Number of branch segments // 0 - 30
 		MIN_AREA: 0.1,       // Minimum area required so spawn a branch // 0 - 0.5
@@ -119,16 +155,32 @@ window.onload = function() {
 		LEAF_FREQ: 0.08,         // Frequency of leaf generation // 0 - .3
 		LEAF_MOD: 0.5,           // Tendency of leaves to grow at a position, where 1 is the tip of a branch // 0 - 1
 		LEAF_WEIGHT: 0.1,        // Influence of the lead modifier // 0 - 0.3
+		
+		LEAF_MODE: 1,
+		LEAF_LENGTH: 5,
+		LEAF_WIDTH: 5,
+		LEAF_DIVISIONS: 8,
     
-		COLOR: "#553311",        // Tree color
-    
-    WIREFRAME: false         // Display wireframe
+		WIREFRAME: false         // Display wireframe
 		
 	};
 			
 	gui.add(params, 'seed',1,10000).onFinishChange(function(value){
 		random = new Math.seedrandom(value);
-		leafmaterial = new THREE.MeshPhongMaterial( { color: random()*0xffffff, specular: random()*0xffffff, shininess: 5, morphTargets: true, vertexColors: THREE.FaceColors, shading: THREE.FlatShading } );		
+		leafmaterial = new THREE.MeshPhongMaterial( { color: random()*0xffffff,
+													  specular: random()*0xffffff,
+													  shininess: 5,
+													  morphTargets: true,
+													  vertexColors: THREE.FaceColors,
+													  shading: THREE.FlatShading,
+													  wireframe: params.WIREFRAME} );
+
+		plantMaterial = new THREE.MeshPhongMaterial({color: random()*0xffffff,
+                                                specular: random()*0xffffff,
+												shininess: 5,
+												morphTargets: true,
+												vertexColors: THREE.FaceColors,
+												shading: THREE.FlatShading});
 		regenerate_tree();
 	});
 	gui.add(params, 'TRUNK').onFinishChange(function(value){
@@ -191,12 +243,33 @@ window.onload = function() {
 	gui.add(params, 'LEAF_WEIGHT').onFinishChange(function(value){
 		regenerate_tree();	
 	});
-  gui.add(params, 'COLOR').onFinishChange(function(value){
+	gui.add(params, 'WIREFRAME').onFinishChange(function(value){
+		random = new Math.seedrandom(value);
+		leafmaterial = new THREE.MeshPhongMaterial( { color: random()*0xffffff,
+													  specular: random()*0xffffff,
+													  shininess: 5,
+													  morphTargets: true,
+													  vertexColors: THREE.FaceColors,
+													  shading: THREE.FlatShading,
+													  wireframe: params.WIREFRAME} );
 		regenerate_tree();	
 	});
-  gui.add(params, 'WIREFRAME').onFinishChange(function(value){
+	gui.add(params, 'LEAF_MODE',1,4).step(1).onFinishChange(function(value){
+		regenerate_tree();	
+	})
+	gui.add(params, 'LEAF_LENGTH',1,20).step(1).onFinishChange(function(value){
 		regenerate_tree();	
 	});
+	gui.add(params, 'LEAF_WIDTH',1,20).step(1).onFinishChange(function(value){
+		regenerate_tree();	
+	});
+	gui.add(params, 'LEAF_DIVISIONS',1,100).step(1).onFinishChange(function(value){
+		regenerate_tree();	
+	});
+	
+	
+	
+	
 	
 	regenerate_tree();
 	
@@ -215,6 +288,11 @@ window.onload = function() {
 
 	controls.staticMoving = true;
 	controls.dynamicDampingFactor = 0.15;
+	
+	// STATS
+
+	stats = new Stats();
+	document.getElementById( 'container' ).appendChild( stats.domElement );
 	
 	window.onresize = redraw;
 	window.onresize();
