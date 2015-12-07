@@ -2,19 +2,6 @@
 // Code to create a plant #1 //
 //---------------------------//
 
-// Random number generation --- o
-
-var inputString = "0123456789abcdef0123456789abcdef";
-var inputArray = [];
-var randArray = [];
-
-for (var i = 0; i < inputString.length; i++) {
-  inputArray.push(parseInt(inputString.charAt(i),16));
-}
-for (var i = 0; i < inputString.length - 3; i++) {
-  randArray.push((inputArray[i] + inputArray[i+1] + inputArray[i+2] + inputArray[i+3])/60.0);
-}
-
 // Variables --- o
 
 var params;
@@ -151,9 +138,6 @@ function branch(geometry,tri,indices,repeat,level) {
     }
     
     // Leaves
-    
-    //var modifier = (i+1) / repeat;
-    //modifier = Math.abs(modifier - params.LEAF_MOD);
     var temp2 = temp.clone();
     var midpoint = temp.midpoint();
     if (random() < params.LEAF_FREQ) {
@@ -177,7 +161,7 @@ function branch(geometry,tri,indices,repeat,level) {
     firstSegment = segments.length;
     for (var i = start; i < end; i++) {
       if (branchChance(segments[i],level)) {
-        branch(geometry,segments[i].tri,segments[i].indices,params.BRANCH,level+1);
+        branch(geometry,segments[i].tri,segments[i].indices,params.BRANCH*(1-params.B_REDUCE),level+1);
       }
     }
   }

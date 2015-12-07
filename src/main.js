@@ -129,7 +129,7 @@ window.onload = function() {
 	params = {
 		seed: 2277,
 		TRUNK: 50,           // Number of trunk segments  // 0 - 150
-		BRANCH: 9,           // Number of branch segments // 0 - 30
+		BRANCH: 13,          // Number of branch segments // 0 - 30
 		MIN_AREA: 0.1,       // Minimum area required so spawn a branch // 0 - 0.5
 
 		HEIGHT: 0.7,         // Height of a segment // 0.1 - 5
@@ -137,6 +137,7 @@ window.onload = function() {
 
 		DECAY: 0.03,         // Rate at which the trunk shrinks // 0 - 1
 		B_DECAY: 0.2,        // Rate at which branches shrink // 0 - 1
+    B_REDUCE: 0.5,       // Reduction of length of sub-branches // 0 - 1
 
 		SINE_DECAY: 0.1,     // Wavelike form decay // 0 - 1
 		SINE_FREQ: 5,        // Rate of sine decay // 0 - 20
@@ -202,6 +203,9 @@ window.onload = function() {
 		regenerate_tree();	
 	});
 	gui.add(params, 'B_DECAY').min(-1).max(1).onFinishChange(function(value){
+		regenerate_tree();	
+	});
+  gui.add(params, 'B_REDUCE').min(0).max(1).onFinishChange(function(value){
 		regenerate_tree();	
 	});
 	gui.add(params, 'SINE_DECAY').min(0).max(1).onFinishChange(function(value){
