@@ -43,13 +43,10 @@ function regenerate_tree(){
 	//scene.remove(leafObj);
 	
 	//create plant object
-	plantObj = new THREE.Object3D();
-	plantObj.castShadow = true;
-	
+	plantObj = new THREE.Object3D();	
 
 	//add trunk
 	trunkObj = new THREE.Mesh(plantMesh1(params),plantMaterial);
-	trunkObj.castShadow = true;
 	plantObj.add(trunkObj);
 	
 	leafObj = new THREE.Geometry();
@@ -62,7 +59,6 @@ function regenerate_tree(){
 
 	}
 	leafObj = new THREE.Mesh( leafObj, leafmaterial );
-	leafObj.castShadow = true;
 	plantObj.add( leafObj );
 	
 	scene.add(plantObj);
@@ -84,18 +80,6 @@ window.onload = function() {
 	renderer = new THREE.WebGLRenderer({antialias: true, logarithmicDepthBuffer: true});
 	document.body.appendChild(renderer.domElement);
 	renderer.setClearColor("white", 1);
-	renderer.shadowMap.enabled = true;
-	
-	renderer.shadowMapSoft = true;
-
-	renderer.shadowCameraNear = 3;
-	renderer.shadowCameraFar = camera.far;
-	renderer.shadowCameraFov = 50;
-
-	renderer.shadowMapBias = 0.0039;
-	renderer.shadowMapDarkness = 0.5;
-	renderer.shadowMapWidth = 1024;
-	renderer.shadowMapHeight = 1024;
 	
 	scene = new THREE.Scene();
 	scene.fog = new THREE.FogExp2("#77E", 0.00008);
@@ -108,13 +92,7 @@ window.onload = function() {
 	
 	var light = new THREE.DirectionalLight("white");
 	light.position.set(-15, 20, 10);
-	light.castShadow = true;
-	scene.add(light);
-	
-	var lightNight = new THREE.DirectionalLight("#EAF", 0.1);
-	lightNight.position.set(15, -25, -10);
-	lightNight.castShadow = true;
-	scene.add(lightNight);
+	scene.add(light);	
 	
 	var startseed = 2277;
 	
@@ -301,19 +279,12 @@ window.onload = function() {
 	
 	
 	// Controls
+	
+	controls = new THREE.OrbitControls( camera, renderer.domElement );
+	controls.enableDamping = true;
+	controls.dampingFactor = 0.75;
+	controls.enableZoom = true;
 				
-	controls = new THREE.TrackballControls( camera , renderer.domElement );
-	controls.target.set(0, 20, 0);
-
-	controls.rotateSpeed = 1.0;
-	controls.zoomSpeed = 1.2;
-	controls.panSpeed = 0.8;
-
-	controls.noZoom = false;
-	controls.noPan = false;
-
-	controls.staticMoving = true;
-	controls.dynamicDampingFactor = 0.15;
 	
 	// STATS
 
