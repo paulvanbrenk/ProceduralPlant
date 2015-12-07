@@ -1,12 +1,3 @@
-var random = new Math.seedrandom(4287340557);
-var leafmaterial = new THREE.MeshPhongMaterial({color: random()*0xffffff,
-                                                specular: random()*0xffffff,
-												shininess: 5,
-												morphTargets: true,
-												vertexColors: THREE.FaceColors,
-												shading: THREE.FlatShading});	
-			
-
 function generate_leaf_geometry(divisions,length,width,mode) {
 	var geometry = new THREE.Geometry();
 	switch (mode){
