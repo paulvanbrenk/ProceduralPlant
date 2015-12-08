@@ -230,15 +230,6 @@ window.onload = function() {
 	gui.add(params, 'HEIGHT_THRESHOLD').min(0).max(1).onFinishChange(function(value){
 		regenerate_tree();	
 	});
-	gui.add(params, 'LEAF_FREQ').min(0).max(.3).onFinishChange(function(value){
-		regenerate_tree();	
-	});
-	// gui.add(params, 'LEAF_MOD').min(0).max(1).onFinishChange(function(value){
-		// regenerate_tree();	
-	// });
-	// gui.add(params, 'LEAF_WEIGHT').min(0).max(.3).onFinishChange(function(value){
-		// regenerate_tree();	
-	//});
 	gui.add(params, 'WIREFRAME').onFinishChange(function(value){
 		random = new Math.seedrandom(params.seed);
 		leafmaterial = new THREE.MeshPhongMaterial( { color: random()*0xffffff,
@@ -256,6 +247,9 @@ window.onload = function() {
 												vertexColors: THREE.FaceColors,
 												shading: THREE.FlatShading,
 												wireframe: params.WIREFRAME});
+		regenerate_tree();	
+	});
+  gui.add(params, 'LEAF_FREQ').min(0).max(.3).onFinishChange(function(value){
 		regenerate_tree();	
 	});
 	gui.add(params, 'LEAF_MODE',1,4).step(1).onFinishChange(function(value){
