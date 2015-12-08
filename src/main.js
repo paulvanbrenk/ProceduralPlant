@@ -194,7 +194,7 @@ window.onload = function() {
 	gui.add(params, 'DECAY').min(-.05).max(.05).onFinishChange(function(value){
 		regenerate_tree();	
 	});
-	gui.add(params, 'B_DECAY').min(-1).max(1).onFinishChange(function(value){
+	gui.add(params, 'B_DECAY').min(-.1).max(.3).onFinishChange(function(value){
 		regenerate_tree();	
 	});
   gui.add(params, 'B_REDUCE').min(0).max(1).onFinishChange(function(value){
@@ -218,7 +218,7 @@ window.onload = function() {
 	gui.add(params, 'LEVEL_MOD').min(0).max(.3).onFinishChange(function(value){
 		regenerate_tree();	
 	});
-	gui.add(params, 'B_NUM').min(0).max(5).onFinishChange(function(value){
+	gui.add(params, 'B_NUM',2,5).step(1).onFinishChange(function(value){
 		regenerate_tree();	
 	});
 	gui.add(params, 'HEIGHT_MOD').min(0).max(1).onFinishChange(function(value){
