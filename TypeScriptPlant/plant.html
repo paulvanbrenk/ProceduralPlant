@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <script src="lib/three.js"></script>
+    <script src="lib/perlin.js"></script>
+    <script src="lib/dat.gui.min.js"></script>
+    <script src="lib/Detector.js"></script>
+    <script src="lib/seedrandom.min.js"></script>
+    <script src="lib/stats.min.js"></script>
+    <script src="lib/OrbitControls.js"></script>
+    <script src="src/makeLeaves.js"></script>
+    <script src="src/makePlant1.js"></script>
+    <script src="src/main.js"></script>
+    <script src="src/environment.js"></script>
+
+
+    <style>
+        #stats {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+            #stats #fps {
+                background: transparent !important;
+            }
+
+                #stats #fps #fpsText {
+                    color: white;
+                    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+                }
+
+                #stats #fps #fpsGraph {
+                    display: none;
+                }
+    </style>
+
+</head>
+
+<body style="margin: 0px; overflow: hidden;">
+
+    <div id="container"></div>
+
+
+</body>
+
+</html>
