@@ -1,6 +1,14 @@
 ///environment.js
 //A basic background for everything, with some basic animation
 
+
+declare var noise: {
+    seed(seed: number): void;
+    perlin2(x: number, y: number): number;
+    perlin3(x: number, y: number, z: number): number;
+};
+
+
 function environment() {
     var obj = new THREE.Object3D();
 
@@ -49,7 +57,7 @@ function environment() {
     //Clouds
     var angleMin = Math.PI / 5;
     var angleMax = Math.PI / 2;
-    var cloudGeoVals = [];
+    var cloudGeoVals: THREE.Vector3[] = [];
     var cloudGeo = new THREE.RingGeometry(angleMin, angleMax, 128, 32);
     noise.seed(Math.random())
     for (var i = 0; i < cloudGeo.vertices.length; ++i) {
@@ -78,8 +86,8 @@ function environment() {
     var cloudTime = 0;
     updates.push(function (dt) {
         cloudTime += (0.000003 * dt);
-        for (var i = 0; i < cloud.geometry.vertices.length; ++i) {
-            var vert = cloud.geometry.vertices[i];
+        for (var i = 0; i < (<THREE.Geometry>cloud.geometry).vertices.length; ++i) {
+            var vert = (<THREE.Geometry>cloud.geometry).vertices[i];
             var vertOld = cloudGeoVals[i];
             var angle = vertOld.length()
 
@@ -91,7 +99,7 @@ function environment() {
             vert.normalize();
             vert.multiplyScalar(1 - (offset * 0.2));
         }
-        cloud.geometry.verticesNeedUpdate = true;
+        (<THREE.Geometry>cloud.geometry).verticesNeedUpdate = true;
         cloud.geometry.computeFaceNormals();
         cloud.geometry.computeVertexNormals();
         cloud.rotation.z -= (0.000005 * dt);

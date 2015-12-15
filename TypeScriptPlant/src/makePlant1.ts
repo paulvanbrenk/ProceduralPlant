@@ -4,37 +4,48 @@
 
 // Variables --- o
 
-var params;
+var params: Parameters;
 
 var currentIndex = 0;
 var wiggleVec = new THREE.Vector3(0, 0, 0);
-var segments = [];
-var leaves = [];
+var segments :Segment[] = [];
+var leaves :LeafObj[]= [];
 var firstSegment = 0;
 var treeHeight = 0;
 
 var DECAY = 0.03;         // Rate at which the trunk shrinks
 var WIGGLE = 0.005;       // Tendency of the trunk to curve
 
-var triangle;
+var triangle:THREE.Triangle;
 
 // Functions --- o
 
-function LeafObj(vertex, rotation) {
-    this.position = vertex;
-    this.rotation = rotation;
+class LeafObj{
+    constructor(vertex: THREE.Vector3, rotation: THREE.Vector3) {
+        this.position = vertex;
+        this.rotation = rotation;
+    }
+
+    position: THREE.Vector3;
+    rotation: THREE.Vector3;
 }
 
 // Stores an external (visible) triangle of the tree
-function Segment(p0, p1, p2, i0, i1, i2) {
-    this.tri = new THREE.Triangle(p0, p1, p2);
-    this.indices = new THREE.Vector3(i0, i1, i2);
-    this.height = Math.max(p0.y, p1.y, p2.y);
-    treeHeight = Math.max(treeHeight, this.height);
+class Segment {
+    constructor(p0: THREE.Vector3, p1: THREE.Vector3, p2: THREE.Vector3, i0: number, i1: number, i2: number) {
+        this.tri = new THREE.Triangle(p0, p1, p2);
+        this.indices = new THREE.Vector3(i0, i1, i2);
+        this.height = Math.max(p0.y, p1.y, p2.y);
+        treeHeight = Math.max(treeHeight, this.height);
+    }
+
+    tri: THREE.Triangle;
+    indices: THREE.Vector3;
+    height: number;
 }
 
 // Determines whether or not a branch spawns a segment
-function branchChance(segment, level) {
+function branchChance(segment : Segment, level:number) {
 
     var hDiff = 0;
     if (treeHeight != 0) {
@@ -46,7 +57,7 @@ function branchChance(segment, level) {
 }
 
 // Align a triangle with a vector (relative to its center).
-function tAlign(tri, vector) {
+function tAlign(tri:THREE.Triangle, vector:THREE.Vector3) {
 
     var center = tri.midpoint();
     var temp = tri.clone();
@@ -62,7 +73,7 @@ function tAlign(tri, vector) {
 }
 
 // Scale a triangle by a value (relative to its center).
-function tScale(tri, value) {
+function tScale(tri:THREE.Triangle, value:number) {
     var center = tri.midpoint();
     var temp1 = tri.clone();
     var temp2 = tri.clone();
@@ -73,7 +84,7 @@ function tScale(tri, value) {
 }
 
 // Cap a triangle into a pyramid
-function capTriangle(geometry, offset, tri, indices) {
+function capTriangle(geometry:THREE.Geometry, offset:THREE.Vector3, tri:THREE.Triangle, indices:THREE.Vector3) {
     var newTri = tri.clone();
     var newPoint = newTri.midpoint().add(offset);
 
@@ -88,10 +99,10 @@ function capTriangle(geometry, offset, tri, indices) {
 }
 
 // Append a triangle to an existing vertex mesh
-function addTriangle(geometry, offset, tri, indices) {
+function addTriangle(geometry: THREE.Geometry, offset: THREE.Vector3, tri: THREE.Triangle, indices: THREE.Vector3) {
 
     var newTri = tri.clone();
-    scale = DECAY + Math.sin(segments.length * params.SINE_FREQ) * params.SINE_DECAY;
+    var scale = DECAY + Math.sin(segments.length * params.SINE_FREQ) * params.SINE_DECAY;
     newTri = tScale(newTri, scale);
     newTri = tAlign(newTri, offset);
     newTri = new THREE.Triangle(newTri.a.add(offset), newTri.b.add(offset), newTri.c.add(offset));
@@ -123,7 +134,7 @@ function addTriangle(geometry, offset, tri, indices) {
     return newTri;
 }
 
-function branch(geometry, tri, indices, repeat, level) {
+function branch(geometry:THREE.Geometry, tri:THREE.Triangle, indices:THREE.Vector3, repeat:number, level:number) {
 
     var temp = tri.clone();
     wiggleVec = new THREE.Vector3(0, 0, 0);
@@ -169,7 +180,7 @@ function branch(geometry, tri, indices, repeat, level) {
 }
 
 // Main function
-function plantMesh1(vars) {
+function plantMesh1(vars:Parameters) {
 
     console.log(vars);
   

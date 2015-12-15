@@ -1,4 +1,11 @@
-function generate_leaf_geometry(divisions, length, width, mode) {
+declare enum LeafMode {
+    round = 1,
+    spiky = 2,
+    three = 3,
+    four = 4,
+}
+
+function generate_leaf_geometry(divisions: number, length: number, width: number, mode: LeafMode): THREE.Geometry {
     var geometry = new THREE.Geometry();
     switch (mode) {
         case 1: //round leaf
@@ -22,7 +29,7 @@ function generate_leaf_geometry(divisions, length, width, mode) {
             break;
 
         case 2://spiky leaf
-            var rvals = [];
+            var rvals : number[] = [];
             rvals.push(random());
             for (var i = 1; i < divisions; i++) {
                 rvals.push((random() * 2 + rvals[i - 1] * 5) / 6);
@@ -94,7 +101,7 @@ function generate_leaf_geometry(divisions, length, width, mode) {
 }
 
 
-function generate_leaf_object(obj, divisions, length, width, mode) {
+function generate_leaf_object(obj:LeafObj, divisions:number, length:number, width:number, mode:LeafMode) : THREE.Mesh {
 
     // Rotation
     var mat = new THREE.Matrix4();
